@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VOLT | Techwear & Streetwear
 
-## Getting Started
+An upbeat, advanced techwear and streetwear e-commerce platform built with **Next.js 15**, **Tailwind CSS v4**, and **Framer Motion**.
 
-First, run the development server:
+## Project Overview
+This project serves as the digital storefront and membership portal for VOLT, a cyberpunk/techwear apparel brand. Designed to be performant, highly stylized, and immersive, the architecture leverages modern Server-Side Rendering (SSR) via the Next.js App Router.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Core Features
+- **Dynamic Aesthetic:** Deep industrial matte themes with `VOLT` neon-yellow and `Cyber Red` alert accents.
+- **Hardware & Merch:** Categorized storefront spanning outerwear, bottoms, footwear, and brand accessories.
+- **The Syndicate (Membership Platform):** 
+  - Tracks user purchases and awards "Volt Points".
+  - **Black Site Vault:** Restricted storefront rendering experimental 1-of-1 items, visually locked until clearance (points) are acquired.
+  - Early access to new drops.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Repository Structure
+- `src/app/page.tsx` - Initial Landing/Hero Page
+- `src/app/shop/page.tsx` - Main Apparel Storefront
+- `src/app/merch/page.tsx` - Accessories & Hardware Storefront
+- `src/app/membership/page.tsx` - "The Syndicate" Membership Portal
+- `src/components/` - Reusable UI elements (Navbar, Product Cards, Hero Section)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Running Locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+3. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-## Learn More
+## Collaboration Log
+This system was architected collaboratively via **Antigravity** (acting as lead developer) and a local **120B LLM (gpt-oss:120b)** acting as the lead systems architect and UX visionary. The integration ensures sophisticated, unbottlenecked feature generation entirely localized on the user's hardware.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*End of Transmission.*
