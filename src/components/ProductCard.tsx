@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
+import { useStore } from "@/lib/store";
+import { useState } from "react";
 
 interface ProductProps {
   id: string;
@@ -15,11 +17,29 @@ interface ProductProps {
 }
 
 export default function ProductCard({ id, name, price, category, imageUrl, isNew }: ProductProps) {
+  const { addToCart } = useStore();
+  const [added, setAdded] = useState(false);
+
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToCart({
+      id,
+      name,
+      price,
+      category,
+      imageUrl,
+      quantity: 1,
+      size: "M" // Default mock size for quick add
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
+
   return (
     <motion.div 
       whileHover={{ y: -5 }}
       transition={{ type: "spring", stiffness: 300 }}
-      className="group relative flex flex-col bg-[#111111] overflow-hidden border border-white/5 hover:border-volt/30 transition-colors"
+      className="group relative flex flex-col bg-background/80 backdrop-blur-md overflow-hidden border border-foreground/5 hover:border-volt/30 transition-colors"
     >
       {/* Badges */}
       <div className="absolute top-4 left-4 z-10 flex gap-2">
@@ -30,29 +50,26 @@ export default function ProductCard({ id, name, price, category, imageUrl, isNew
         )}
       </div>
       
-      {/* Members-only overlay effect (just decorative for now) */}
-      
       {/* Image Area */}
-      <Link href={`/shop/${id}`} className="relative aspect-[4/5] bg-[#1a1a1a] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <Link href={`/shop/${id}`} className="relative aspect-[4/5] bg-foreground/5 overflow-hidden block">
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         
-        {/* Mock Image Placeholder using abstract gradient/pattern since we don't have actual images */}
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
-          style={{ backgroundImage: `url(${imageUrl})`, backgroundColor: '#222' }}
+          style={{ backgroundImage: `url(${imageUrl})` }}
         />
         
         {/* Quick Add Button */}
         <button 
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 z-20 flex items-center gap-2 bg-foreground text-background font-mono font-bold text-xs uppercase px-6 py-3 tracking-widest hover:bg-volt transition-all duration-300 whitespace-nowrap"
-          onClick={(e) => e.preventDefault()}
+          onClick={handleQuickAdd}
+          className={`absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 z-20 flex items-center gap-2 font-mono font-bold text-xs uppercase px-6 py-3 tracking-widest transition-all duration-300 whitespace-nowrap ${added ? 'bg-volt text-background' : 'bg-foreground text-background hover:bg-volt'}`}
         >
-          <ShoppingBag size={14} /> Quick Add
+          <ShoppingBag size={14} /> {added ? "ADDED" : "Quick Add"}
         </button>
       </Link>
 
       {/* Info Area */}
-      <div className="p-4 flex flex-col gap-2">
+      <div className="p-4 flex flex-col gap-2 relative z-10 bg-background transition-colors duration-500">
         <div className="flex justify-between items-start">
           <div className="font-mono text-[10px] text-foreground/50 uppercase tracking-widest">{category}</div>
           <div className="font-mono font-bold text-volt text-sm">${price.toFixed(2)}</div>

@@ -22,6 +22,12 @@ export const metadata: Metadata = {
   description: "Upbeat techwear and streetwear for men and women.",
 };
 
+import CrosshairCursor from "@/components/CrosshairCursor";
+import TerminalToasts from "@/components/TerminalToast";
+import CyberBackground from "@/components/CyberBackground";
+import ThemeProvider from "@/components/ThemeProvider";
+import AuthProvider from "@/components/AuthProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,9 +36,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${outfit.variable} ${robotoMono.variable} antialiased bg-background text-foreground`}
+        className={`${inter.variable} ${outfit.variable} ${robotoMono.variable} antialiased bg-background text-foreground transition-colors duration-500`}
       >
-        {children}
+        <AuthProvider>
+          <ThemeProvider>
+            <CrosshairCursor />
+            <CyberBackground />
+            {children}
+            <TerminalToasts />
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

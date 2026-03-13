@@ -1,20 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0d0d0d;
-  --foreground: #ededed;
-  --volt: #ccff00;
-  --cyber-red: #ff003c;
+  /* Light Mode Default */
+  --background: #f4f4f5;
+  --foreground: #18181b;
+  --volt: #a3cc00; /* Slightly darker volt for visibility on white */
+  --cyber-red: #e11d48;
 }
 
-@theme inline {
+.dark {
+  /* Dark Mode Overrides */
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+  --volt: #d4ff33;
+  --cyber-red: #ff1a4f;
+}
+
+@theme block {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-volt: var(--volt);
   --color-cyber-red: var(--cyber-red);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-  --font-display: var(--font-display);
+}
+
+* {
+  cursor: none !important;
 }
 
 body {

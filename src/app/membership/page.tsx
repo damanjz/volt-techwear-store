@@ -1,37 +1,71 @@
+"use client";
+
 import Navbar from "@/components/Navbar";
-import { Lock, Zap, Shield, ChevronRight } from "lucide-react";
-import Image from "next/image";
+import { Lock, Shield, Zap, CircleDashed } from "lucide-react";
+import Link from "next/link";
+import { useSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Membership() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isLoggedIn = status === "authenticated";
+
   return (
-    <main className="min-h-screen pt-20 bg-[#080808] text-foreground">
+    <main className="min-h-screen pt-20 bg-transparent text-foreground relative z-10">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative py-24 px-6 overflow-hidden flex justify-center items-center flex-col text-center min-h-[50vh]">
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-cyber-red/10 to-transparent"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-96 bg-cyber-red/5 blur-[150px] rounded-full pointer-events-none"></div>
-
-        <div className="relative z-10 w-full max-w-3xl border border-cyber-red/30 bg-black/50 backdrop-blur-md p-8 md:p-12">
-          <div className="mx-auto w-16 h-16 flex items-center justify-center border-2 border-cyber-red text-cyber-red mb-6 animate-pulse">
-             <Shield size={32} />
+      <section className="relative py-32 px-6 flex flex-col items-center text-center overflow-hidden border-b border-cyber-red/20">
+        <div className="absolute inset-0 bg-gradient-to-b from-cyber-red/10 to-transparent pointer-events-none z-0"></div>
+        
+        <div className="relative z-10 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyber-red/10 border border-cyber-red/30 text-cyber-red text-[10px] font-mono uppercase tracking-widest mb-8">
+            <span className="w-1.5 h-1.5 bg-cyber-red rounded-full animate-pulse"></span>
+            Restricted Access
           </div>
-          <h1 className="font-display font-black text-4xl md:text-6xl tracking-tighter uppercase mb-4 text-glow-red">
+          
+          <h1 className="font-display font-black text-6xl md:text-8xl uppercase tracking-tighter mb-6 text-glow-cyber-red">
             The Syndicate
           </h1>
-          <p className="font-sans text-lg text-foreground/70 mb-8">
-            Access restricted drops, earn encrypted points on every transaction, and unlock tiers of exclusivity.
+          <p className="font-mono text-sm md:text-base text-foreground/70 leading-relaxed max-w-2xl mx-auto mb-12">
+            Beyond the surface web lies The Syndicate. Our operative network gains access to heavily classified hardware drops, encrypted member pricing, and accumulated Volt points for deployment clearances.
           </p>
+          
+          {mounted && !isLoggedIn && (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button 
+                onClick={() => signIn("credentials", { callbackUrl: "/profile" })}
+                className="bg-cyber-red text-white font-mono font-bold text-sm uppercase px-8 py-4 tracking-widest hover:bg-white hover:text-cyber-red transition-colors flex items-center justify-center gap-2"
+              >
+                <Shield size={16} /> Initialize Account
+              </button>
+              <button 
+                onClick={() => signIn("credentials", { callbackUrl: "/profile" })}
+                className="bg-transparent border border-white/20 text-foreground font-mono font-bold text-sm uppercase px-8 py-4 tracking-widest hover:border-cyber-red hover:text-cyber-red transition-colors"
+              >
+                Operative Login
+              </button>
+            </div>
+          )}
 
-          {/* Login/Join Form Mockup */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-cyber-red text-white font-mono font-bold uppercase tracking-widest hover:bg-white hover:text-cyber-red transition-all">
-              Initialize Account
-            </button>
-            <button className="px-8 py-4 border border-white/20 font-mono font-bold uppercase tracking-widest hover:border-volt hover:text-volt transition-all">
-              Login // Authenticate
-            </button>
-          </div>
+          {mounted && isLoggedIn && (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link 
+                href="/profile"
+                className="bg-volt text-background font-mono font-bold text-sm uppercase px-8 py-4 tracking-widest transition-colors flex items-center justify-center gap-2"
+              >
+                <Shield size={16} /> Access Profile Dashboard
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 

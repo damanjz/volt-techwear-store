@@ -7,7 +7,7 @@ const shopProducts = [
     name: "Aegis Utility Jacket // V2",
     price: 345.0,
     category: "Outerwear",
-    imageUrl: "https://images.unsplash.com/photo-1550614000-4b95d4ebf5b4?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/tx-01.png",
     isNew: true
   },
   {
@@ -15,7 +15,7 @@ const shopProducts = [
     name: "Carbon Parachute Cargo",
     price: 185.0,
     category: "Bottoms",
-    imageUrl: "https://images.unsplash.com/photo-1555689502-c4b22d76c56f?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/px-04.png",
     isNew: true
   },
   {
@@ -23,38 +23,52 @@ const shopProducts = [
     name: "Volt Schematic Hoodie",
     price: 120.0,
     category: "Tops",
-    imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/hx-02.png",
   },
   {
     id: "tx-05",
     name: "Phantom Shell Windbreaker",
     price: 210.0,
     category: "Outerwear",
-    imageUrl: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/tx-05.png",
   },
   {
     id: "fx-01",
     name: "Stomper Cyber Boot",
     price: 280.0,
     category: "Footwear",
-    imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/fx-01.png",
   },
   {
     id: "px-09",
     name: "Tactical Modular Pant",
     price: 195.0,
     category: "Bottoms",
-    imageUrl: "https://images.unsplash.com/photo-1517423568366-8b83523034fd?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/px-09.png",
+  },
+  {
+    id: "ax-11",
+    name: "Scout Technical Vest",
+    price: 155.0,
+    category: "Outerwear",
+    imageUrl: "/products/ax-11.png",
+  },
+  {
+    id: "hx-05",
+    name: "Mesh Base Layer",
+    price: 65.0,
+    category: "Tops",
+    imageUrl: "/products/hx-05.png",
   }
 ];
 
 export default function Shop() {
   return (
-    <main className="min-h-screen pt-24 bg-background">
+    <main className="min-h-screen pt-24 bg-transparent">
       <Navbar />
       
-      <section className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-white/10 pb-8">
+      <section className="max-w-7xl mx-auto px-6 py-12 relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-white/10 pb-8 bg-background/40 backdrop-blur-sm p-4 rounded-xl">
           <div>
             <h1 className="font-display font-black text-5xl md:text-7xl uppercase tracking-tighter mb-4">
               Archive <span className="text-volt">.</span>
