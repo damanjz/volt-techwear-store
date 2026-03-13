@@ -9,7 +9,8 @@ This project serves as the digital storefront and membership portal for VOLT, a 
 - **Dynamic Aesthetic:** Deep industrial matte themes with `VOLT` neon-yellow and `Cyber Red` alert accents.
 - **Hardware & Merch:** Categorized storefront spanning outerwear, bottoms, footwear, and brand accessories.
 - **The Syndicate (Membership Platform):** 
-  - Tracks user purchases and awards "Volt Points".
+  - Powered by **NextAuth (v4)** for secure credentials JWT handling.
+  - User identity, Clearance Levels, and Volt Points are securely persisted via **Prisma ORM** connecting directly to a **PostgreSQL** database (Vercel Postgres).
   - **Black Site Vault:** Restricted storefront rendering experimental 1-of-1 items, visually locked until clearance (points) are acquired.
   - Early access to new drops.
 
@@ -22,15 +23,25 @@ This project serves as the digital storefront and membership portal for VOLT, a 
 
 ## Running Locally
 
-1. Install dependencies:
+1. Create a `.env` file at the root with standard connection parameters:
+   ```env
+   DATABASE_URL="postgresql://user:password@localhost:5432/volt_db"
+   NEXTAUTH_SECRET="your_secret_key"
+   NEXTAUTH_URL="http://localhost:3000"
+   ```
+2. Install dependencies:
    ```bash
    npm install
    ```
-2. Start the development server:
+3. Push the Prisma Schema to your database:
+   ```bash
+   npx prisma db push
+   ```
+4. Start the development server:
    ```bash
    npm run dev
    ```
-3. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
 ## Collaboration Log
 This system was architected collaboratively via **Antigravity** (acting as lead developer) and a local **120B LLM (gpt-oss:120b)** acting as the lead systems architect and UX visionary. The integration ensures sophisticated, unbottlenecked feature generation entirely localized on the user's hardware.
