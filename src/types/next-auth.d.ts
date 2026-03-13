@@ -15,3 +15,10 @@ declare module "next-auth" {
     clearanceLevel: number
   }
 }
+
+declare module "next-auth/adapters" {
+  interface AdapterUser {
+    voltPoints: number
+    clearanceLevel: number
+  }
+}

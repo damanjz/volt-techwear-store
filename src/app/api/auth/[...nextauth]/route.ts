@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 export const dynamic = "force-dynamic";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
   },
