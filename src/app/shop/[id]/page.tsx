@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import ProductClient from "./ProductClient";
 import Navbar from "@/components/Navbar";
-import { notFound } from "next/navigation";
 
 export default async function ProductPage({ params }: { params: any }) {
   const { id } = await params;
