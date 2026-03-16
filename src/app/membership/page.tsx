@@ -1,15 +1,13 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
-import { Lock, Shield, Zap, CircleDashed } from "lucide-react";
+import { Lock, Shield, Zap } from "lucide-react";
 import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Membership() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { status } = useSession();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

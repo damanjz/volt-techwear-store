@@ -74,7 +74,7 @@ export default function Shop() {
               Archive <span className="text-volt">.</span>
             </h1>
             <p className="font-mono text-sm text-foreground/60 tracking-widest uppercase">
-              // Primary Apparel Division
+              {"// Primary Apparel Division"}
             </p>
           </div>
           

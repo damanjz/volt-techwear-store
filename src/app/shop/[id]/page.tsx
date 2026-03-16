@@ -100,7 +100,7 @@ export default function ProductPage() {
             </div>
             
             <div className="absolute top-8 right-8 font-mono text-[10px] text-volt border border-volt/30 bg-volt/10 backdrop-blur-sm px-2 py-1 rotate-90 origin-right tracking-widest uppercase">
-              // SCANNED_ASSET
+              {"// SCANNED_ASSET"}
             </div>
           </div>
 

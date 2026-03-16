@@ -9,7 +9,7 @@ import CartDrawer from "./CartDrawer";
 
 export default function Navbar() {
   const { toggleCart, getCartCount, theme, toggleTheme } = useStore();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [mounted, setMounted] = useState(false);
 
   const isLoggedIn = status === "authenticated";

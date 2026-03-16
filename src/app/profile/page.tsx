@@ -1,6 +1,6 @@
 "use client";
 
-import { useStore } from "@/lib/store";
+
 import Navbar from "@/components/Navbar";
 import { User, ShieldAlert, Award, LogOut, Package } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import { useSession, signOut, signIn } from "next-auth/react";
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
-  const router = useRouter();
+
 
   const isLoggedIn = status === "authenticated";
   const voltPoints = session?.user?.voltPoints || 0;

@@ -3,7 +3,7 @@
 import { useStore } from "@/lib/store";
 import { X, ShoppingBag, Plus, Minus, Trash2 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 

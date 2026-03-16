@@ -46,7 +46,7 @@ export default function Merch() {
               Hardware
             </h1>
             <p className="font-mono text-sm text-foreground/80 tracking-widest uppercase bg-black/60 inline-block px-3 py-1">
-              // Accessories & Collectibles
+              {"// Accessories & Collectibles"}
             </p>
           </div>
         </div>

@@ -24,7 +24,7 @@ export default function HeroSection() {
       {/* Content */}
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto flex flex-col items-center">
         <div className="inline-block bg-volt text-background px-3 py-1 font-mono text-sm font-bold uppercase tracking-widest mb-6">
-          // Drop 02: Neon District Now Live
+          {"// Drop 02: Neon District Now Live"}
         </div>
         
         <h1 className="font-display font-black text-6xl md:text-8xl lg:text-9xl uppercase tracking-tighter leading-[0.9] text-glow-volt mb-6">
