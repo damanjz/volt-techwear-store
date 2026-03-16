@@ -33,7 +33,7 @@ export default function CartDrawer() {
         router.push("/profile");
       }
     } catch (error: any) {
-      addToast(`[CHECKOUT_ERR]: ${error.message || "Unknown error"}`, "error");
+      addToast(`[CHECKOUT_ERR]: ${error.message || "Unknown error"}`, "alert");
     } finally {
       setIsCheckingOut(false);
     }
