@@ -18,11 +18,12 @@ let schema = fs.readFileSync(schemaPath, 'utf8');
 if (mode === 'dev') {
   // Switch to SQLite
   schema = schema.replace(/provider = "postgresql"/g, 'provider = "sqlite"');
-  // Comment out Postgres-specific env vars if they were explicitly used in schema (though we use prisma.config.ts)
+  schema = schema.replace(/url\s+=\s+env\("DATABASE_URL"\)/g, 'url = "file:./dev.db"');
   console.log('🔄 Switched Prisma to SQLite (Local Dev Mode)');
 } else {
   // Switch to PostgreSQL
   schema = schema.replace(/provider = "sqlite"/g, 'provider = "postgresql"');
+  schema = schema.replace(/url\s+=\s+"file:\.\/dev\.db"/g, 'url = env("DATABASE_URL")');
   console.log('🚀 Switched Prisma to PostgreSQL (Production Mode)');
 }
 
