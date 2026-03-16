@@ -18,12 +18,10 @@ let schema = fs.readFileSync(schemaPath, 'utf8');
 // Robust replacement for the entire datasource block
 const sqliteBlock = `datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }`;
 
 const postgresBlock = `datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }`;
 
 // Find the datasource block and replace it
