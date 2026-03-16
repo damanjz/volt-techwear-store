@@ -10,6 +10,21 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "out/**",
+      "dist/**",
+      "build/**",
+      "*.config.js",
+      "*.config.mjs",
+      "*.config.ts",
+      "scripts/**",
+      "src/generated/**",
+      "next-env.d.ts"
+    ],
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
@@ -18,7 +33,6 @@ const eslintConfig = [
       "react/jsx-no-comment-textnodes": "off",
       "@next/next/no-img-element": "warn"
     },
-    ignores: [".next/**", "node_modules/**", "out/**"],
   },
 ];
 
