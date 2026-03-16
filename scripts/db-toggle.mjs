@@ -15,15 +15,25 @@ if (!['dev', 'prod'].includes(mode)) {
 
 let schema = fs.readFileSync(schemaPath, 'utf8');
 
+// Robust replacement for the entire datasource block
+const sqliteBlock = `datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}`;
+
+const postgresBlock = `datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}`;
+
+// Find the datasource block and replace it
+const datasourceRegex = /datasource\s+db\s+\{[\s\S]*?\}/;
+
 if (mode === 'dev') {
-  // Switch to SQLite
-  schema = schema.replace(/provider = "postgresql"/g, 'provider = "sqlite"');
-  schema = schema.replace(/url\s+=\s+env\("DATABASE_URL"\)/g, 'url = "file:./dev.db"');
+  schema = schema.replace(datasourceRegex, sqliteBlock);
   console.log('🔄 Switched Prisma to SQLite (Local Dev Mode)');
 } else {
-  // Switch to PostgreSQL
-  schema = schema.replace(/provider = "sqlite"/g, 'provider = "postgresql"');
-  schema = schema.replace(/url\s+=\s+"file:\.\/dev\.db"/g, 'url = env("DATABASE_URL")');
+  schema = schema.replace(datasourceRegex, postgresBlock);
   console.log('🚀 Switched Prisma to PostgreSQL (Production Mode)');
 }
 
