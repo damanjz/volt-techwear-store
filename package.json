@@ -18,7 +18,7 @@
     "bcryptjs": "^3.0.3",
     "framer-motion": "^12.36.0",
     "lucide-react": "^0.577.0",
-    "next": "15.1.0",
+    "next": "15.1.7",
     "next-auth": "^4.24.11",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -31,7 +31,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.1.0",
+    "eslint-config-next": "15.1.7",
     "prisma": "^6.1.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5"
