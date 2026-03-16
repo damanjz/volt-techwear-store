@@ -18,7 +18,7 @@ let schema = fs.readFileSync(schemaPath, 'utf8');
 // Robust replacement for the entire datasource block
 const sqliteBlock = `datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }`;
 
 const postgresBlock = `datasource db {

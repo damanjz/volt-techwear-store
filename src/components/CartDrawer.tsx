@@ -3,18 +3,41 @@
 import { useStore } from "@/lib/store";
 import { X, ShoppingBag, Plus, Minus, Trash2 } from "lucide-react";
 import Image from "next/image";
-
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { createOrder } from "@/lib/actions";
+import { useToastStore } from "./TerminalToast";
+import { useRouter } from "next/navigation";
 
 export default function CartDrawer() {
-  const { isCartOpen, toggleCart, cart, updateQuantity, removeFromCart, getCartTotal } = useStore();
+  const { isCartOpen, toggleCart, cart, updateQuantity, removeFromCart, getCartTotal, clearCart } = useStore();
+  const { addToast } = useToastStore();
+  const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   // Prevent hydration errors by only rendering cart contents client-side
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const handleCheckout = async () => {
+    setIsCheckingOut(true);
+    try {
+      const result = await createOrder(cart, getCartTotal());
+      
+      if (result.success) {
+        addToast(`[REQUISITION_CONFIRMED]: Order ${result.orderId} initialized.`, "success");
+        clearCart();
+        toggleCart();
+        router.push("/profile");
+      }
+    } catch (error: any) {
+      addToast(`[CHECKOUT_ERR]: ${error.message || "Unknown error"}`, "error");
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   if (!isMounted) return null;
 
@@ -141,10 +164,11 @@ export default function CartDrawer() {
                 </p>
 
                 <button 
-                  className="w-full py-4 bg-foreground text-background font-mono font-bold uppercase tracking-widest hover:bg-volt transition-colors mt-2"
-                  onClick={() => alert("Secure Checkout Initiated (Mock)")}
+                  className="w-full py-4 bg-foreground text-background font-mono font-bold uppercase tracking-widest hover:bg-volt transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isCheckingOut}
+                  onClick={handleCheckout}
                 >
-                  Confirm Requisition
+                  {isCheckingOut ? '[PROCESSING_SECURE_PAYMENT...]' : 'Confirm Requisition'}
                 </button>
               </div>
             )}

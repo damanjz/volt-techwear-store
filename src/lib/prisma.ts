@@ -8,16 +8,6 @@ const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL;
 
 export const prisma =
   globalForPrisma.prisma ??
-  new PrismaClient(
-    dbUrl 
-      ? ({
-          datasources: {
-            db: {
-              url: dbUrl,
-            },
-          },
-        } as any)
-      : undefined
-  );
+  new PrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

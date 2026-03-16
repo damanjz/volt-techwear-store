@@ -1,39 +1,14 @@
 import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
+import { prisma } from "@/lib/prisma";
 
-const merchProducts = [
-  {
-    id: "m-01",
-    name: "Volt Schematic Sticker Pack",
-    price: 15.0,
-    category: "Merch",
-    imageUrl: "/products/m-01.png",
-    isNew: true
-  },
-  {
-    id: "m-02",
-    name: "Syndicate Nalgene Bottle 32oz",
-    price: 35.0,
-    category: "Merch",
-    imageUrl: "/products/m-02.png",
-  },
-  {
-    id: "ax-09",
-    name: "Modular Sling Rig",
-    price: 85.0,
-    category: "Accessories",
-    imageUrl: "/products/ax-09.png",
-  },
-  {
-    id: "m-04",
-    name: "Cyber Beanie",
-    price: 45.0,
-    category: "Accessories",
-    imageUrl: "/products/m-04.png",
-  }
-];
+export default async function Merch() {
+  const merchProducts = await prisma.product.findMany({
+    where: {
+      category: "Merch"
+    }
+  });
 
-export default function Merch() {
   return (
     <main className="min-h-screen pt-24 bg-transparent">
       <Navbar />
@@ -52,7 +27,7 @@ export default function Merch() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {merchProducts.map((product) => (
+          {merchProducts.map((product: any) => (
             <ProductCard key={product.id} {...product} />
           ))}
         </div>

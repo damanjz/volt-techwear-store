@@ -1,68 +1,22 @@
 import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
+import { prisma } from "@/lib/prisma";
 
-const shopProducts = [
-  {
-    id: "tx-01",
-    name: "Aegis Utility Jacket // V2",
-    price: 345.0,
-    category: "Outerwear",
-    imageUrl: "/products/tx-01.png",
-    isNew: true
-  },
-  {
-    id: "px-04",
-    name: "Carbon Parachute Cargo",
-    price: 185.0,
-    category: "Bottoms",
-    imageUrl: "/products/px-04.png",
-    isNew: true
-  },
-  {
-    id: "hx-02",
-    name: "Volt Schematic Hoodie",
-    price: 120.0,
-    category: "Tops",
-    imageUrl: "/products/hx-02.png",
-  },
-  {
-    id: "tx-05",
-    name: "Phantom Shell Windbreaker",
-    price: 210.0,
-    category: "Outerwear",
-    imageUrl: "/products/tx-05.png",
-  },
-  {
-    id: "fx-01",
-    name: "Stomper Cyber Boot",
-    price: 280.0,
-    category: "Footwear",
-    imageUrl: "/products/fx-01.png",
-  },
-  {
-    id: "px-09",
-    name: "Tactical Modular Pant",
-    price: 195.0,
-    category: "Bottoms",
-    imageUrl: "/products/px-09.png",
-  },
-  {
-    id: "ax-11",
-    name: "Scout Technical Vest",
-    price: 155.0,
-    category: "Outerwear",
-    imageUrl: "/products/ax-11.png",
-  },
-  {
-    id: "hx-05",
-    name: "Mesh Base Layer",
-    price: 65.0,
-    category: "Tops",
-    imageUrl: "/products/hx-05.png",
-  }
-];
+export default async function Shop() {
+  const products = await prisma.product.findMany({
+    where: {
+      category: {
+        not: "Merch"
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
 
-export default function Shop() {
+  // Filter out the Black Site products if they shouldn't show here
+  const shopProducts = products.filter((p: any) => !p.id.startsWith('bs-'));
+
   return (
     <main className="min-h-screen pt-24 bg-transparent">
       <Navbar />
@@ -87,7 +41,7 @@ export default function Shop() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {shopProducts.map((product) => (
+          {shopProducts.map((product: any) => (
             <ProductCard key={product.id} {...product} />
           ))}
         </div>
