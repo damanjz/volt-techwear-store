@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import ProductClient from "./ProductClient";
 import Navbar from "@/components/Navbar";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProductPage({ params }: { params: any }) {
   const { id } = await params;
 
