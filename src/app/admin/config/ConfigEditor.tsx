@@ -3,7 +3,7 @@
 import { upsertConfig } from "@/lib/admin-actions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Save, Plus, Trash2 } from "lucide-react";
+import { Save, Plus } from "lucide-react";
 
 interface Config {
   id: string;

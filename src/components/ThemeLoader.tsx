@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 export default async function ThemeLoader() {
-  let themeVars: Record<string, string> = {};
+  const themeVars: Record<string, string> = {};
 
   try {
     const configs = await prisma.siteConfig.findMany({
