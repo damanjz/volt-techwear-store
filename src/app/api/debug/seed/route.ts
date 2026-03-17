@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,9 @@ const products = [
     category: "Outerwear",
     imageUrl: "/products/tx-01.png",
     isNew: true,
+    isActive: true,
+    isClassified: false,
+    tags: "jacket,outerwear,utility",
     stock: 50
   },
   {
@@ -23,6 +27,9 @@ const products = [
     category: "Bottoms",
     imageUrl: "/products/px-04.png",
     isNew: true,
+    isActive: true,
+    isClassified: false,
+    tags: "pants,cargo,bottoms",
     stock: 75
   },
   {
@@ -32,6 +39,9 @@ const products = [
     price: 120.0,
     category: "Tops",
     imageUrl: "/products/hx-02.png",
+    isActive: true,
+    isClassified: false,
+    tags: "hoodie,tops,schematic",
     stock: 100
   },
   {
@@ -41,6 +51,9 @@ const products = [
     price: 210.0,
     category: "Outerwear",
     imageUrl: "/products/tx-05.png",
+    isActive: true,
+    isClassified: false,
+    tags: "windbreaker,outerwear,shell",
     stock: 40
   },
   {
@@ -50,6 +63,9 @@ const products = [
     price: 280.0,
     category: "Footwear",
     imageUrl: "/products/fx-01.png",
+    isActive: true,
+    isClassified: false,
+    tags: "boots,footwear,tactical",
     stock: 30
   },
   {
@@ -59,6 +75,9 @@ const products = [
     price: 195.0,
     category: "Bottoms",
     imageUrl: "/products/px-09.png",
+    isActive: true,
+    isClassified: false,
+    tags: "pants,bottoms,tactical",
     stock: 60
   },
   {
@@ -68,6 +87,9 @@ const products = [
     price: 155.0,
     category: "Outerwear",
     imageUrl: "/products/ax-11.png",
+    isActive: true,
+    isClassified: false,
+    tags: "vest,outerwear,technical",
     stock: 25
   },
   {
@@ -77,6 +99,9 @@ const products = [
     price: 65.0,
     category: "Tops",
     imageUrl: "/products/hx-05.png",
+    isActive: true,
+    isClassified: false,
+    tags: "tops,mesh,baselayer",
     stock: 120
   },
   // Merch Products
@@ -88,6 +113,9 @@ const products = [
     category: "Merch",
     imageUrl: "/products/m-01.png",
     isNew: true,
+    isActive: true,
+    isClassified: false,
+    tags: "merch,stickers",
     stock: 500
   },
   {
@@ -97,6 +125,9 @@ const products = [
     price: 35.0,
     category: "Merch",
     imageUrl: "/products/m-02.png",
+    isActive: true,
+    isClassified: false,
+    tags: "merch,bottle",
     stock: 150
   },
   {
@@ -106,6 +137,9 @@ const products = [
     price: 85.0,
     category: "Accessories",
     imageUrl: "/products/ax-09.png",
+    isActive: true,
+    isClassified: false,
+    tags: "accessories,bag,sling",
     stock: 45
   },
   {
@@ -115,9 +149,12 @@ const products = [
     price: 45.0,
     category: "Accessories",
     imageUrl: "/products/m-04.png",
+    isActive: true,
+    isClassified: false,
+    tags: "accessories,beanie",
     stock: 200
   },
-  // Black Site Products
+  // Black Site Products (Classified)
   {
     id: "bs-01",
     name: "0x_NIGHTFALL_RIG",
@@ -125,6 +162,9 @@ const products = [
     price: 850.0,
     category: "EXO-WEAR",
     imageUrl: "https://images.unsplash.com/photo-1616885230919-b223049bb4aa?q=80&w=800&auto=format&fit=crop",
+    isActive: true,
+    isClassified: true,
+    tags: "classified,exo,blacksite",
     stock: 5
   },
   {
@@ -134,6 +174,9 @@ const products = [
     price: 420.0,
     category: "HARDWARE",
     imageUrl: "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?q=80&w=800&auto=format&fit=crop",
+    isActive: true,
+    isClassified: true,
+    tags: "classified,hardware,blacksite",
     stock: 10
   },
   {
@@ -143,12 +186,60 @@ const products = [
     price: 1200.0,
     category: "ARCHIVE",
     imageUrl: "https://images.unsplash.com/photo-1520975954732-57dd22299614?q=80&w=800&auto=format&fit=crop",
+    isActive: true,
+    isClassified: true,
+    tags: "classified,archive,blacksite",
     stock: 3
   }
 ];
 
+const coupons = [
+  {
+    id: "coupon-volt20",
+    code: "VOLT20",
+    description: "20% off your entire order",
+    discountType: "PERCENT",
+    value: 20.0,
+    scope: "SITE",
+    usageLimit: 100,
+    isActive: true,
+  },
+  {
+    id: "coupon-freeship",
+    code: "FREESHIP",
+    description: "$10 flat discount",
+    discountType: "FLAT",
+    value: 10.0,
+    scope: "SITE",
+    usageLimit: 0,
+    isActive: true,
+  },
+  {
+    id: "coupon-blacksite50",
+    code: "BLACKSITE50",
+    description: "50% off Black Site items",
+    discountType: "PERCENT",
+    value: 50.0,
+    scope: "CATEGORY",
+    category: "EXO-WEAR",
+    usageLimit: 10,
+    isActive: true,
+  },
+];
+
+const defaultConfigs = [
+  { key: "theme.volt", value: "#d4ff33" },
+  { key: "theme.cyber-red", value: "#ff1a4f" },
+  { key: "theme.background", value: "#0a0a0a" },
+  { key: "theme.foreground", value: "#ffffff" },
+  { key: "feature.blacksite", value: "true" },
+  { key: "feature.banner.active", value: "false" },
+  { key: "feature.banner.text", value: "🔥 Use code VOLT20 for 20% off" },
+];
+
 export async function GET() {
   try {
+    // Seed products
     for (const p of products) {
       await prisma.product.upsert({
         where: { id: p.id },
@@ -156,7 +247,49 @@ export async function GET() {
         create: p,
       });
     }
-    return NextResponse.json({ success: true, message: "Database seeded successfully" });
+
+    // Seed admin user
+    const adminPassword = await bcrypt.hash("admin123", 10);
+    await prisma.user.upsert({
+      where: { email: "admin@volt.sys" },
+      update: {
+        role: "ADMIN",
+        clearanceLevel: 3,
+        voltPoints: 99999,
+      },
+      create: {
+        email: "admin@volt.sys",
+        password: adminPassword,
+        name: "VOLT Admin",
+        role: "ADMIN",
+        clearanceLevel: 3,
+        voltPoints: 99999,
+      },
+    });
+
+    // Seed coupons
+    for (const c of coupons) {
+      await prisma.coupon.upsert({
+        where: { id: c.id },
+        update: c,
+        create: c,
+      });
+    }
+
+    // Seed default configs
+    for (const cfg of defaultConfigs) {
+      await prisma.siteConfig.upsert({
+        where: { key: cfg.key },
+        update: {},
+        create: cfg,
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Database seeded: products, admin user, coupons, and configs",
+      admin: { email: "admin@volt.sys", password: "admin123" },
+    });
   } catch (error) {
     console.error("Seed error:", error);
     return NextResponse.json({ success: false, error: String(error) }, { status: 500 });

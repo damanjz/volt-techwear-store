@@ -4,9 +4,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
+
+// ─── NextAuth Models ────────────────────────────────────────
 
 model Account {
   id                 String  @id @default(cuid())
@@ -35,23 +37,6 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model User {
-  id             String    @id @default(cuid())
-  name           String?
-  email          String?   @unique
-  emailVerified  DateTime?
-  image          String?
-  password       String?
-  
-  // Custom V8 Techwear fields
-  voltPoints     Int       @default(0)
-  clearanceLevel Int       @default(1)
-  
-  accounts       Account[]
-  sessions       Session[]
-  orders         Order[]
-}
-
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -60,14 +45,56 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// ─── Core Models ────────────────────────────────────────────
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  password       String?
+
+  // Syndicate Identity
+  voltPoints     Int       @default(0)
+  clearanceLevel Int       @default(1)
+  role           String    @default("USER")   // USER | ADMIN
+  isBanned       Boolean   @default(false)
+
+  accounts       Account[]
+  sessions       Session[]
+  orders         Order[]
+}
+
+model Product {
+  id           String   @id @default(cuid())
+  name         String
+  description  String
+  price        Float
+  category     String
+  imageUrl     String
+  isNew        Boolean  @default(false)
+  stock        Int      @default(100)
+  isActive     Boolean  @default(true)
+  isClassified Boolean  @default(false)
+  tags         String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  orderItems   OrderItem[]
+  coupons      CouponProduct[]
+}
+
 model Order {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  total     Float
-  status    String   @default("PENDING") // PENDING, PAID, SHIPPED
-  createdAt DateTime @default(now())
-  items     OrderItem[]
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  total        Float
+  discount     Float    @default(0)
+  couponCode   String?
+  status       String   @default("PENDING")
+  createdAt    DateTime @default(now())
+  items        OrderItem[]
 }
 
 model OrderItem {
@@ -81,16 +108,49 @@ model OrderItem {
   price     Float
 }
 
-model Product {
-  id          String   @id @default(cuid())
-  name        String
-  description String
-  price       Float
-  category    String
-  imageUrl    String
-  isNew       Boolean  @default(false)
-  stock       Int      @default(100)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  orderItems  OrderItem[]
+// ─── Coupon Engine ──────────────────────────────────────────
+
+model Coupon {
+  id               String    @id @default(cuid())
+  code             String    @unique
+  description      String    @default("")
+  discountType     String    // PERCENT | FLAT
+  value            Float
+  scope            String    @default("SITE") // SITE | PRODUCT | CATEGORY
+  category         String?
+  usageLimit       Int       @default(0) // 0 = unlimited
+  usedCount        Int       @default(0)
+  isActive         Boolean   @default(true)
+  expiresAt        DateTime?
+  createdAt        DateTime  @default(now())
+
+  applicableProducts CouponProduct[]
+}
+
+model CouponProduct {
+  id        String  @id @default(cuid())
+  couponId  String
+  coupon    Coupon  @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([couponId, productId])
+}
+
+// ─── Admin System ───────────────────────────────────────────
+
+model SiteConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  target    String   @default("")
+  details   String   @default("")
+  createdAt DateTime @default(now())
 }

@@ -27,6 +27,7 @@ import TerminalToasts from "@/components/TerminalToast";
 import CyberBackground from "@/components/CyberBackground";
 import ThemeProvider from "@/components/ThemeProvider";
 import AuthProvider from "@/components/AuthProvider";
+import ThemeLoader from "@/components/ThemeLoader";
 
 export default function RootLayout({
   children,
@@ -38,6 +39,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${outfit.variable} ${robotoMono.variable} antialiased bg-background text-foreground transition-colors duration-500`}
       >
+        <ThemeLoader />
         <AuthProvider>
           <ThemeProvider>
             <CrosshairCursor />

@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
               clearanceLevel: 1
             }
           });
-          return user;
+          return user as any;
         }
 
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password || "");
@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid password");
         }
 
-        return user;
+        return user as any;
       }
     })
   ],
@@ -54,6 +54,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
+        token.role = (user as any).role;
         token.voltPoints = (user as any).voltPoints;
         token.clearanceLevel = (user as any).clearanceLevel;
       }
@@ -69,6 +70,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
+        session.user.role = token.role as string;
         session.user.voltPoints = token.voltPoints as number;
         session.user.clearanceLevel = token.clearanceLevel as number;
       }
