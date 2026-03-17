@@ -253,6 +253,7 @@ export async function GET() {
     await prisma.user.upsert({
       where: { email: "admin@volt.sys" },
       update: {
+        password: adminPassword,
         role: "ADMIN",
         clearanceLevel: 3,
         voltPoints: 99999,
