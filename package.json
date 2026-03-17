@@ -27,7 +27,7 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
-    "@prisma/client": "^7.5.0",
+    "@prisma/client": "^6.1.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
@@ -35,7 +35,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.12",
-    "prisma": "^7.5.0",
+    "prisma": "^6.1.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5"
   }
