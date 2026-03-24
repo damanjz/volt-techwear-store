@@ -237,7 +237,19 @@ const defaultConfigs = [
   { key: "feature.banner.text", value: "🔥 Use code VOLT20 for 20% off" },
 ];
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Protect seed endpoint with a secret key
+  const { searchParams } = new URL(request.url);
+  const key = searchParams.get("key");
+  const secret = process.env.NEXTAUTH_SECRET || "fallback_volt_secret_key_123";
+
+  if (key !== secret) {
+    return NextResponse.json(
+      { error: "Unauthorized. Provide ?key=YOUR_NEXTAUTH_SECRET" },
+      { status: 403 }
+    );
+  }
+
   try {
     // Seed products
     for (const p of products) {
