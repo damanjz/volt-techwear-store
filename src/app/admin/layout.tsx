@@ -16,10 +16,8 @@ export default async function AdminLayout({
     redirect("/membership");
   }
 
-  const isAdmin =
-    session.user.role === "ADMIN" || session.user.clearanceLevel >= 3;
-
-  if (!isAdmin) {
+  // Only ADMIN role can access — no clearance-based fallback
+  if (session.user.role !== "ADMIN") {
     redirect("/");
   }
 

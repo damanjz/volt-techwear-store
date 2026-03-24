@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Only protect /admin routes
+  // Protect /admin routes — ADMIN role ONLY (not clearance-based)
   if (pathname.startsWith("/admin")) {
     const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET || "fallback_volt_secret_key_123" });
 
@@ -17,14 +17,22 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Check admin access: role = ADMIN or clearanceLevel >= 3
+    // Only role = "ADMIN" can access the admin panel
     const role = token.role as string;
-    const clearanceLevel = token.clearanceLevel as number;
 
-    if (role !== "ADMIN" && clearanceLevel < 3) {
+    if (role !== "ADMIN") {
       const url = request.nextUrl.clone();
       url.pathname = "/";
       return NextResponse.redirect(url);
+    }
+  }
+
+  // Protect /api/debug routes — only accessible in dev or by ADMIN
+  if (pathname.startsWith("/api/debug")) {
+    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET || "fallback_volt_secret_key_123" });
+
+    if (!token || (token.role as string) !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
   }
 
@@ -32,5 +40,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/debug/:path*"],
 };
