@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import ProductCard from "@/components/ProductCard";
+import { useState, useMemo, useCallback } from "react";
+import SearchBar from "./components/SearchBar";
+import CategoryFilters from "./components/CategoryFilters";
+import SortDropdown from "./components/SortDropdown";
+import ProductGrid from "./components/ProductGrid";
+import type { SortOption } from "./components/SortDropdown";
 
 interface Product {
   id: string;
@@ -22,20 +24,16 @@ interface ShopClientProps {
   products: Product[];
 }
 
-type SortOption = "newest" | "price-asc" | "price-desc" | "name-az";
-
 export default function ShopClient({ products }: ShopClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
 
-  // Extract unique categories from products
   const categories = useMemo(() => {
     const cats = [...new Set(products.map((p) => p.category))];
     return ["All", ...cats.sort()];
   }, [products]);
 
-  // Filter and sort products
   const filteredProducts = useMemo(() => {
     const query = searchQuery.toLowerCase();
     const filtered = products.filter((product) => {
@@ -75,6 +73,11 @@ export default function ShopClient({ products }: ShopClientProps) {
     return sorted;
   }, [products, searchQuery, activeCategory, sortBy]);
 
+  const handleClearFilters = useCallback(() => {
+    setSearchQuery("");
+    setActiveCategory("All");
+  }, []);
+
   return (
     <section className="max-w-7xl mx-auto px-6 py-12 relative z-10">
       {/* Header */}
@@ -89,103 +92,25 @@ export default function ShopClient({ products }: ShopClientProps) {
             </p>
           </div>
 
-          {/* Search Bar */}
-          <div className="relative w-full lg:w-80">
-            <Search
-              size={16}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/30"
-            />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search archive..."
-              className="w-full bg-foreground/5 border border-foreground/10 pl-11 pr-4 py-3 font-mono text-xs text-foreground placeholder:text-foreground/30 focus:border-volt focus:outline-none transition-colors uppercase tracking-wider"
-            />
-          </div>
+          <SearchBar value={searchQuery} onChange={setSearchQuery} />
         </div>
 
         {/* Filters Row */}
         <div className="mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-6 border-t border-foreground/5">
-          {/* Category Filters */}
-          <div className="flex gap-2 overflow-x-auto pb-2 w-full sm:w-auto font-mono text-xs uppercase tracking-widest font-bold">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`px-4 py-2 whitespace-nowrap transition-colors ${
-                  activeCategory === category
-                    ? "bg-foreground text-background"
-                    : "border border-foreground/20 hover:border-volt text-foreground/70 hover:text-volt"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-
-          {/* Sort + Count */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <SlidersHorizontal size={14} className="text-foreground/40" />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="bg-foreground/5 border border-foreground/10 px-3 py-2 font-mono text-xs text-foreground/70 uppercase tracking-wider focus:border-volt focus:outline-none cursor-pointer appearance-none"
-              >
-                <option value="newest">Newest</option>
-                <option value="price-asc">Price: Low → High</option>
-                <option value="price-desc">Price: High → Low</option>
-                <option value="name-az">Name A-Z</option>
-              </select>
-            </div>
-          </div>
+          <CategoryFilters
+            categories={categories}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+          />
+          <SortDropdown value={sortBy} onChange={setSortBy} />
         </div>
       </div>
 
-      {/* Results Count */}
-      <div className="mb-6 font-mono text-xs text-foreground/40 uppercase tracking-widest">
-        Showing {filteredProducts.length} of {products.length} assets
-      </div>
-
-      {/* Product Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <AnimatePresence mode="popLayout">
-          {filteredProducts.map((product) => (
-            <motion.div
-              key={product.id}
-              layout
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ProductCard {...product} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-
-      {/* Empty State */}
-      {filteredProducts.length === 0 && (
-        <div className="text-center py-24">
-          <div className="font-display font-black text-3xl uppercase tracking-tighter text-foreground/20 mb-4">
-            No Results
-          </div>
-          <p className="font-mono text-sm text-foreground/40 uppercase tracking-widest">
-            No assets match your search criteria.
-          </p>
-          <button
-            onClick={() => {
-              setSearchQuery("");
-              setActiveCategory("All");
-            }}
-            className="mt-6 border border-foreground/20 px-6 py-2 font-mono text-xs uppercase tracking-widest hover:border-volt hover:text-volt transition-colors"
-          >
-            Clear Filters
-          </button>
-        </div>
-      )}
+      <ProductGrid
+        products={filteredProducts}
+        totalCount={products.length}
+        onClearFilters={handleClearFilters}
+      />
     </section>
   );
 }
