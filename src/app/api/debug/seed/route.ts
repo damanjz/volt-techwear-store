@@ -238,14 +238,19 @@ const defaultConfigs = [
 ];
 
 export async function GET(request: Request) {
+  // Block in production entirely (also blocked by middleware)
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   // Protect seed endpoint with a secret key
   const { searchParams } = new URL(request.url);
   const key = searchParams.get("key");
-  const secret = process.env.NEXTAUTH_SECRET || "fallback_volt_secret_key_123";
+  const secret = process.env.NEXTAUTH_SECRET;
 
-  if (key !== secret) {
+  if (!secret || key !== secret) {
     return NextResponse.json(
-      { error: "Unauthorized. Provide ?key=YOUR_NEXTAUTH_SECRET" },
+      { error: "Unauthorized" },
       { status: 403 }
     );
   }
@@ -260,10 +265,12 @@ export async function GET(request: Request) {
       });
     }
 
-    // Seed admin user
-    const adminPassword = await bcrypt.hash("admin123", 10);
+    // Seed admin user with secure password from env
+    const adminEmail = process.env.ADMIN_EMAIL || "admin@volt.sys";
+    const adminPass = process.env.ADMIN_PASSWORD || "admin123";
+    const adminPassword = await bcrypt.hash(adminPass, 12);
     await prisma.user.upsert({
-      where: { email: "admin@volt.sys" },
+      where: { email: adminEmail },
       update: {
         password: adminPassword,
         role: "ADMIN",
@@ -271,7 +278,7 @@ export async function GET(request: Request) {
         voltPoints: 99999,
       },
       create: {
-        email: "admin@volt.sys",
+        email: adminEmail,
         password: adminPassword,
         name: "VOLT Admin",
         role: "ADMIN",
@@ -300,11 +307,18 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Database seeded: products, admin user, coupons, and configs",
-      admin: { email: "admin@volt.sys", password: "admin123" },
+      message: "Database seeded successfully",
+      counts: {
+        products: products.length,
+        coupons: coupons.length,
+        configs: defaultConfigs.length,
+      },
     });
   } catch (error) {
     console.error("Seed error:", error);
-    return NextResponse.json({ success: false, error: String(error) }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Seeding failed. Check server logs." },
+      { status: 500 }
+    );
   }
 }

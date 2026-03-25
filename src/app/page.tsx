@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
+import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
 import { ArrowRight, Shield } from "lucide-react";
@@ -70,15 +71,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Simple Footer */}
-      <footer className="border-t border-white/10 py-12 text-center relative z-10">
-        <div className="font-display font-black text-4xl text-white/5 uppercase tracking-tighter mb-4">
-          VOLT.
-        </div>
-        <div className="font-mono text-xs text-foreground/40 uppercase tracking-widest">
-          © {new Date().getFullYear()} Volt System // End Transmission.
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

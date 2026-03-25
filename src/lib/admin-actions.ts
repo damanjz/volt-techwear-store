@@ -26,21 +26,54 @@ async function logActivity(userId: string, action: string, target: string = "", 
 
 // ─── Product Actions ────────────────────────────────────────
 
+function sanitizeString(value: string | null, maxLength: number = 500): string {
+  if (!value) return "";
+  return value.trim().slice(0, maxLength);
+}
+
+function validatePrice(value: string | null): number {
+  const price = parseFloat(value || "0");
+  if (isNaN(price) || price < 0 || price > 999999) {
+    throw new Error("Invalid price. Must be between 0 and 999,999.");
+  }
+  return Math.round(price * 100) / 100;
+}
+
+function validateStock(value: string | null): number {
+  const stock = parseInt(value || "100");
+  if (isNaN(stock) || stock < 0 || stock > 999999) {
+    throw new Error("Invalid stock value.");
+  }
+  return stock;
+}
+
+const ALLOWED_CATEGORIES = ["Outerwear", "Tops", "Bottoms", "Footwear", "Accessories", "Merch", "EXO-WEAR", "HARDWARE", "ARCHIVE"];
+
 export async function createProduct(formData: FormData) {
   const admin = await requireAdmin();
 
+  const name = sanitizeString(formData.get("name") as string, 200);
+  const description = sanitizeString(formData.get("description") as string, 2000);
+  const category = sanitizeString(formData.get("category") as string, 50);
+
+  if (!name) throw new Error("Product name is required.");
+  if (!description) throw new Error("Product description is required.");
+  if (!ALLOWED_CATEGORIES.includes(category)) {
+    throw new Error("Invalid category.");
+  }
+
   const product = await prisma.product.create({
     data: {
-      name: formData.get("name") as string,
-      description: formData.get("description") as string,
-      price: parseFloat(formData.get("price") as string),
-      category: formData.get("category") as string,
-      imageUrl: formData.get("imageUrl") as string || "/products/default.png",
-      stock: parseInt(formData.get("stock") as string) || 100,
+      name,
+      description,
+      price: validatePrice(formData.get("price") as string),
+      category,
+      imageUrl: sanitizeString(formData.get("imageUrl") as string, 500) || "/products/default.png",
+      stock: validateStock(formData.get("stock") as string),
       isNew: formData.get("isNew") === "true",
       isActive: formData.get("isActive") !== "false",
       isClassified: formData.get("isClassified") === "true",
-      tags: formData.get("tags") as string || "",
+      tags: sanitizeString(formData.get("tags") as string, 500),
     },
   });
 

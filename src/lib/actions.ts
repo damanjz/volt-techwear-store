@@ -5,27 +5,85 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { validateCoupon } from "./admin-actions";
 
-export async function createOrder(cartItems: any[], total: number, couponCode?: string) {
+interface CartItemInput {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  size?: string;
+}
+
+function validateCartItems(items: CartItemInput[]): void {
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error("Cart is empty.");
+  }
+  if (items.length > 50) {
+    throw new Error("Too many items in cart.");
+  }
+  for (const item of items) {
+    if (!item.id || typeof item.id !== "string") {
+      throw new Error("Invalid item in cart.");
+    }
+    if (typeof item.quantity !== "number" || item.quantity < 1 || item.quantity > 99) {
+      throw new Error(`Invalid quantity for ${item.name || "item"}.`);
+    }
+    if (typeof item.price !== "number" || item.price < 0) {
+      throw new Error(`Invalid price for ${item.name || "item"}.`);
+    }
+  }
+}
+
+export async function createOrder(cartItems: CartItemInput[], total: number, couponCode?: string) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
     throw new Error("Authentication required for checkout.");
   }
 
+  // Validate inputs
+  validateCartItems(cartItems);
+  if (typeof total !== "number" || total < 0) {
+    throw new Error("Invalid order total.");
+  }
+
+  // Sanitize coupon code
+  const sanitizedCoupon = couponCode?.trim().toUpperCase().slice(0, 50);
+
   try {
+    // Verify stock availability and prices from database (prevent client-side tampering)
+    const productIds = cartItems.map((item) => item.id);
+    const dbProducts = await prisma.product.findMany({
+      where: { id: { in: productIds }, isActive: true },
+    });
+
+    const productMap = new Map(dbProducts.map((p) => [p.id, p]));
+
+    // Validate all products exist, are active, and have stock
+    let serverTotal = 0;
+    for (const item of cartItems) {
+      const dbProduct = productMap.get(item.id);
+      if (!dbProduct) {
+        throw new Error(`Product "${item.name}" is no longer available.`);
+      }
+      if (dbProduct.stock < item.quantity) {
+        throw new Error(`Insufficient stock for "${dbProduct.name}". Only ${dbProduct.stock} remaining.`);
+      }
+      serverTotal += dbProduct.price * item.quantity;
+    }
+
     let discount = 0;
     let appliedCoupon: string | null = null;
 
     // Validate and apply coupon if provided
-    if (couponCode) {
-      const result = await validateCoupon(couponCode, total);
+    if (sanitizedCoupon) {
+      const result = await validateCoupon(sanitizedCoupon, serverTotal);
       if (result.valid && result.discount) {
         discount = result.discount;
         appliedCoupon = result.code || null;
       }
     }
 
-    const finalTotal = Math.max(0, total - discount);
+    const finalTotal = Math.max(0, serverTotal - discount);
 
     const order = await prisma.order.create({
       data: {
@@ -35,12 +93,15 @@ export async function createOrder(cartItems: any[], total: number, couponCode?: 
         couponCode: appliedCoupon,
         status: "PAID",
         items: {
-          create: cartItems.map((item) => ({
-            productId: item.id,
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price,
-          })),
+          create: cartItems.map((item) => {
+            const dbProduct = productMap.get(item.id)!;
+            return {
+              productId: item.id,
+              name: dbProduct.name,
+              quantity: item.quantity,
+              price: dbProduct.price,
+            };
+          }),
         },
       },
       include: {
@@ -86,8 +147,9 @@ export async function createOrder(cartItems: any[], total: number, couponCode?: 
     }
 
     return { success: true, orderId: order.id, discount, pointsEarned };
-  } catch (error) {
-    console.error("Order creation failed:", error);
-    throw new Error("Loadout processing failure.");
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Loadout processing failure.";
+    console.error("Order creation failed:", message);
+    throw new Error(message);
   }
 }

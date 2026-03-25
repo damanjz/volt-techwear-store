@@ -18,8 +18,28 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VOLT | Techwear & Streetwear",
-  description: "Upbeat techwear and streetwear for men and women.",
+  metadataBase: new URL("https://volt-techwear-store.vercel.app"),
+  title: {
+    default: "VOLT | Techwear & Streetwear",
+    template: "%s | VOLT",
+  },
+  description: "High-performance tactical techwear and streetwear. Engineered materials meet cyberpunk aesthetics.",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "VOLT Techwear",
+    title: "VOLT | Techwear & Streetwear",
+    description: "High-performance tactical techwear and streetwear. Engineered materials meet cyberpunk aesthetics.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "VOLT | Techwear & Streetwear",
+    description: "High-performance tactical techwear and streetwear.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 import CrosshairCursor from "@/components/CrosshairCursor";

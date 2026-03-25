@@ -1,6 +1,19 @@
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { prisma } from "@/lib/prisma";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Hardware & Merch",
+  description: "VOLT accessories and collectibles. Sticker packs, bottles, bags, and limited-edition drops.",
+  openGraph: {
+    title: "Hardware & Merch | VOLT",
+    description: "VOLT accessories and collectibles.",
+  },
+};
+
+export const dynamic = "force-dynamic";
 
 export default async function Merch() {
   const merchProducts = await prisma.product.findMany({
@@ -32,6 +45,7 @@ export default async function Merch() {
           ))}
         </div>
       </section>
+      <Footer />
     </main>
   );
 }
