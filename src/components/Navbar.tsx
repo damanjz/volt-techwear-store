@@ -6,7 +6,7 @@ import { useStore } from "@/lib/store";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import CartDrawer from "./CartDrawer";
+import CartDrawer from "./cart/CartDrawer";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
