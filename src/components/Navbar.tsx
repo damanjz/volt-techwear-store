@@ -11,6 +11,7 @@ import CartDrawer from "./CartDrawer";
 const navLinks = [
   { label: "Shop", href: "/shop" },
   { label: "Merch", href: "/merch" },
+  { label: "Black Site", href: "/black-site", classified: true },
 ];
 
 export default function Navbar() {
@@ -67,8 +68,15 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="hover:text-volt transition-colors"
+                className={
+                  (link as any).classified
+                    ? "hover:text-cyber-red transition-colors flex items-center gap-1.5 text-cyber-red/70"
+                    : "hover:text-volt transition-colors"
+                }
               >
+                {(link as any).classified && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyber-red animate-pulse" />
+                )}
                 {link.label}
               </Link>
             ))}

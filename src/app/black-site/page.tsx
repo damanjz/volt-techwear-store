@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import BlackSiteClient from "./BlackSiteClient";
 import type { Metadata } from "next";
 
@@ -13,18 +12,27 @@ export const metadata: Metadata = {
 };
 
 export default async function BlackSitePage() {
-  // Server-side access control - don't leak classified product data
   const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    redirect("/membership");
-  }
-  const products = await prisma.product.findMany({
-    where: {
-      id: {
-        startsWith: 'bs-'
-      }
-    }
-  });
 
-  return <BlackSiteClient initialProducts={products} />;
+  const clearanceLevel = session?.user?.clearanceLevel ?? 0;
+  const voltPoints = session?.user?.voltPoints ?? 0;
+  const isLoggedIn = !!session?.user;
+
+  // Only fetch products if user has some clearance
+  const products = isLoggedIn
+    ? await prisma.product.findMany({
+        where: {
+          id: { startsWith: "bs-" },
+        },
+      })
+    : [];
+
+  return (
+    <BlackSiteClient
+      initialProducts={JSON.parse(JSON.stringify(products))}
+      clearanceLevel={clearanceLevel}
+      voltPoints={voltPoints}
+      isLoggedIn={isLoggedIn}
+    />
+  );
 }

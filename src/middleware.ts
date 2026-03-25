@@ -40,8 +40,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protect /profile and /black-site — authenticated users only
-  if (pathname === "/profile" || pathname.startsWith("/black-site")) {
+  // Protect /profile — authenticated users only
+  if (pathname === "/profile") {
     const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
 
     if (!token) {
@@ -61,5 +61,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/profile", "/black-site/:path*", "/api/debug/:path*", "/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/admin/:path*", "/profile", "/api/debug/:path*", "/((?!_next/static|_next/image|favicon.ico).*)"],
 };

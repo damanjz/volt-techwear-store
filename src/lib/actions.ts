@@ -153,3 +153,56 @@ export async function createOrder(cartItems: CartItemInput[], total: number, cou
     throw new Error(message);
   }
 }
+
+// Clearance upgrade tiers
+const CLEARANCE_TIERS = [
+  { level: 2, cost: 500, label: "Tier 2 — Field Operative" },
+  { level: 3, cost: 2000, label: "Tier 3 — Black Site Access" },
+] as const;
+
+export async function upgradeClearance(targetLevel: number) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    throw new Error("Authentication required.");
+  }
+
+  const tier = CLEARANCE_TIERS.find((t) => t.level === targetLevel);
+  if (!tier) {
+    throw new Error("Invalid clearance tier.");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+  });
+
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  if (user.clearanceLevel >= targetLevel) {
+    throw new Error("You already have this clearance level.");
+  }
+
+  if (user.clearanceLevel < targetLevel - 1) {
+    throw new Error("You must upgrade to the previous tier first.");
+  }
+
+  if (user.voltPoints < tier.cost) {
+    throw new Error(`Insufficient Volt Points. Need ${tier.cost}, have ${user.voltPoints}.`);
+  }
+
+  const updated = await prisma.user.update({
+    where: { id: session.user.id },
+    data: {
+      voltPoints: { decrement: tier.cost },
+      clearanceLevel: targetLevel,
+    },
+  });
+
+  return {
+    success: true,
+    newClearanceLevel: updated.clearanceLevel,
+    remainingPoints: updated.voltPoints,
+  };
+}

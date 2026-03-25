@@ -2,111 +2,221 @@
 
 [![Framework: Next.js 15](https://img.shields.io/badge/Framework-Next.js%2015-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![Style: Tailwind CSS 4](https://img.shields.io/badge/Style-Tailwind%20CSS%204-06B6D4?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Database: Prisma + PostgreSQL](https://img.shields.io/badge/Database-Prisma%207%20%2B%20PostgreSQL-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
+[![Database: Prisma 6 + PostgreSQL](https://img.shields.io/badge/Database-Prisma%206%20%2B%20PostgreSQL-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
 [![Auth: NextAuth.js](https://img.shields.io/badge/Auth-NextAuth.js-5D5CDE?style=for-the-badge&logo=next.js)](https://next-auth.js.org/)
+[![Deployed: Vercel](https://img.shields.io/badge/Deployed-Vercel-000000?style=for-the-badge&logo=vercel)](https://volt-techwear-store.vercel.app)
 
 > **STATUS:** [ DEPLOYMENT_ACTIVE ]  
-> **CLEARANCE:** [ NOCTRA_LEVEL_PROTOCOL ]  
-> **ENCRYPTION:** [ AES-256_ACTIVE ]
+> **LIVE:** [ https://volt-techwear-store.vercel.app ]  
+> **ADMIN:** [ ROLE_LOCKED // ADMIN_ONLY ]
 
-**VOLT** is an advanced, high-fidelity techwear and streetwear e-commerce ecosystem. It isn't just a store; it's a membership-driven experience where user interactions, purchases, and "Syndicate" participation unlock classified hardware levels. Built for the era of deep industrial luxury and urban traversal.
-
----
-
-## 🏗️ SYSTEM ARCHITECTURE OVERVIEW
-
-### Core Engine (The Framework)
-- **Next.js 15 (App Router)**: Utilizing **React 19 Server Components (RSC)** for ultra-fast, zero-JS-payload page loads.
-- **Tailwind CSS v4 Engine**: Next-generation utility-first styling with high-performance design tokens and aggressive custom utility primitives.
-- **Framer Motion**: Orchestrating complex layout transitions and industrial micro-animations for an immersive UI feel.
-
-### Data Layer (The Intelligence)
-- **Prisma 7 ORM**: Multi-provider data management. Configured with a sophisticated **Prisma 7 config** system for seamless environment switching.
-- **Database Hybrid Support**:
-  - **Local Development**: SQLite for instant, zero-setup local testing.
-  - **Production Environment**: High-performance PostgreSQL via **Neon/Vercel Postgres**.
-- **Server Actions**: Secure, authenticated checkout and order processing logic executing directly on the server to prevent client-side manipulation.
-
-### Security & ID (The Syndicate)
-- **NextAuth (v4) / Credentials Provider**: Secure, JWT-based authentication protocol.
-- **Identity Progression System**: 
-  - **Volt Points (VP)**: Every purchase earns VP, tracked in the user model.
-  - **Clearance Level Tiering**: 
-    - **Lvl 1 (Operative)**: Initial access.
-    - **Lvl 2 (Elite)**: Unlocked at 500 VP. Access to premium apparel drops.
-    - **Lvl 3 (Syndicate Leader)**: Unlocked at 2000 VP. Access to the **Black Site Vault**.
+**VOLT** is a production-grade techwear e-commerce platform with a cyberpunk identity system. Beyond a store, it's a membership-driven experience where purchases unlock "Syndicate" clearance levels, classified hardware drops, and Volt Points progression — all managed through a complete internal admin control system.
 
 ---
 
-## 🎨 DESIGN SPECIFICATIONS
+## 🏗️ SYSTEM ARCHITECTURE
 
-| CATEGORY | TOKEN / VALUE | DESCRIPTION |
-| :--- | :--- | :--- |
-| **PRIMARY** | `#CCFF00` (Volt Neon) | Used for primary action indicators and "scanned" elements. |
-| **SECONDARY** | `#FF003C` (Cyber Red) | Used for restricted access, alerts, and destructive actions. |
-| **NEUTRAL** | `#000103` (Matte Void) | High-contrast industrial black for depth and premium texturing. |
-| **TYPOGRAPHY** | `Display: BigShoulders`, `Mono: JetBrains Mono`, `Sans: Inter` | A mix of aggressive headers and high-density technical mono. |
-| **EFFECTS** | `Glassmorphism`, `Scanlines`, `Grain-Noise` | To create a "terminal interface" layer over the product imagery. |
+### Core Engine
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Framework** | Next.js 15 (App Router) | React 19 RSC, SSR, dynamic rendering |
+| **Styling** | Tailwind CSS v4 | Custom design tokens (`--volt`, `--cyber-red`) |
+| **Animation** | Framer Motion | Industrial micro-animations, layout transitions |
+| **State** | Zustand (persisted) | Client-side cart, theme, user state |
+| **Database** | Prisma 6 ORM | PostgreSQL (prod) / SQLite (dev) via `db-toggle.mjs` |
+| **Auth** | NextAuth.js v4 | JWT strategy, Credentials provider, role-based access |
+| **Deploy** | Vercel | Auto-deploy from `master` branch |
+
+### Data Models (11 total)
+| Model | Purpose |
+|-------|---------|
+| `User` | Accounts with `role`, `voltPoints`, `clearanceLevel`, `isBanned` |
+| `Product` | Inventory with `isActive`, `isClassified`, `tags`, stock tracking |
+| `Order` / `OrderItem` | Purchase records with discount + coupon tracking |
+| `Coupon` / `CouponProduct` | Discount engine (% or flat, scoped, limited, expirable) |
+| `SiteConfig` | Live key-value config for theme, feature flags, banners |
+| `ActivityLog` | Audit trail of all admin mutations |
+| `Account` / `Session` / `VerificationToken` | NextAuth internals |
 
 ---
 
-## 📂 DIRECTORY STRUCTURE
+## 🔐 SECURITY ARCHITECTURE
 
-```bash
-📦 volt-techwear-store
- ┣ 📂 prisma
- ┃ ┣ 📜 schema.prisma      # Unified DB Schema (Standardized Models)
- ┃ ┣ 📜 prisma.config.ts   # Prisma 7 Multi-Environment Configuration
- ┃ ┗ 📜 seed.mjs           # Baseline Data Seeding Script
- ┣ 📂 src
- ┃ ┣ 📂 app
- ┃ ┃ ┣ 📂 api/debug/seed   # Internal API for Production Database Population
- ┃ ┃ ┣ 📂 shop             # Public Apparel Index (SSR)
- ┃ ┃ ┣ 📂 merch            # Accessories & Hardware Hub
- ┃ ┃ ┣ 📂 membership       # Syndicate Access Portal
- ┃ ┃ ┗ 📂 black-site       # Restricted Classified Assets Vault
- ┃ ┣ 📂 components         # Industrial UI Primitive Libraries
- ┃ ┣ 📂 lib
- ┃ ┃ ┣ 📜 actions.ts       # Secure Server Actions Core
- ┃ ┃ ┣ 📜 prisma.ts        # Global Database Client Initialization
- ┃ ┃ ┗ 📜 store.ts         # Zustand-based Global Client State
- ┗ 📜 package.json         # Automated Build & Post-install Orchestration
+### Middleware Protection (3 Zones)
+| Route | Protection | Details |
+|-------|-----------|---------|
+| `/admin/*` | **ADMIN role only** | JWT token checked, non-admins redirected to `/` |
+| `/profile` | **Authenticated users** | Unauthenticated redirected to `/membership` |
+| `/api/debug/*` | **Blocked in production** | Returns 404 in `NODE_ENV=production` |
+
+### Security Headers (Applied Globally)
+- `Strict-Transport-Security` (HSTS with 2-year max-age)
+- `X-Frame-Options: DENY` (clickjacking prevention)
+- `X-Content-Type-Options: nosniff`
+- `X-XSS-Protection: 1; mode=block`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+
+### SEO Protection
+- `robots.ts` disallows `/admin/`, `/api/`, `/profile`, `/black-site/`
+- Dynamic `sitemap.ts` includes only active, non-classified products
+
+---
+
+## 🛡️ ADMIN CONTROL SYSTEM (`/admin`)
+
+A complete internal dashboard accessible **only** to users with `role = "ADMIN"`.
+
+| Panel | Capabilities |
+|-------|-------------|
+| **Dashboard** | Revenue, order count, product count, user count, low stock alerts, recent orders |
+| **Products** | Full CRUD, toggle active/inactive, stock monitoring with low-stock warnings, classified (Black Site) flag |
+| **Coupons** | Create/delete/toggle coupons — supports PERCENT/FLAT, site-wide/category/product scope, usage limits, expiry dates |
+| **Users** | Promote/demote roles, adjust clearance levels, edit Volt Points, ban/unban users |
+| **Theme** | Live color editor with instant preview — changes `--volt`, `--cyber-red`, background, foreground via DB-driven CSS variables |
+| **Config** | Key-value editor for feature flags, promotional banners, pricing multipliers — preset shortcuts for common configs |
+
+All admin mutations are logged in the `ActivityLog` table with user ID, action, target, and details.
+
+---
+
+## ⚡ SYNDICATE IDENTITY SYSTEM
+
+| Mechanic | Details |
+|----------|---------|
+| **Volt Points** | Earned at 10% of order total, tracked per user |
+| **Clearance Levels** | Lvl 1 (default) → Lvl 2 (5,000 VP) → Lvl 3 (15,000 VP) |
+| **Black Site** | Classified product vault accessible to Lvl 3+ operatives |
+| **Auto-Registration** | First login auto-creates account with 1,500 VP starting bonus |
+
+---
+
+## 🎨 DESIGN SYSTEM
+
+| Token | Light Mode | Dark Mode | Purpose |
+|-------|-----------|-----------|---------|
+| `--volt` | `#a3cc00` | `#d4ff33` | Primary accent (CTAs, highlights) |
+| `--cyber-red` | `#e11d48` | `#ff1a4f` | Alerts, restricted access, destructive actions |
+| `--background` | `#f4f4f5` | `#0a0a0a` | Page background |
+| `--foreground` | `#18181b` | `#ffffff` | Text color |
+
+**Typography:** Inter (sans), Outfit (display), Roboto Mono (code/labels)  
+**Effects:** Glassmorphism, particle network background, crosshair cursor, terminal-style toasts
+
+> Theme colors can be overridden at runtime via the Admin Theme Editor (stored in `SiteConfig`, injected via `ThemeLoader` component).
+
+---
+
+## 📂 PROJECT STRUCTURE
+
+```
+volt-techwear-store/
+├── prisma/
+│   └── schema.prisma           # 11 models — User, Product, Order, Coupon, SiteConfig, ActivityLog, etc.
+├── scripts/
+│   └── db-toggle.mjs           # Switches datasource between SQLite (dev) and PostgreSQL (prod)
+├── src/
+│   ├── app/
+│   │   ├── page.tsx            # Homepage — hero, new arrivals, syndicate teaser
+│   │   ├── shop/               # Product archive (force-dynamic, ShopClient)
+│   │   │   ├── [id]/           # Individual product pages with loading states
+│   │   │   └── loading.tsx     # Skeleton loading UI
+│   │   ├── merch/              # Accessories & hardware hub
+│   │   ├── membership/         # Syndicate sign-up/login portal
+│   │   ├── profile/            # User profile (Volt Points, clearance)
+│   │   ├── black-site/         # Classified vault (Lvl 3+ only)
+│   │   ├── admin/              # Admin dashboard (ADMIN role only)
+│   │   │   ├── products/       # Product CRUD + bulk actions
+│   │   │   ├── coupons/        # Coupon engine management
+│   │   │   ├── users/          # User management + ban system
+│   │   │   ├── theme/          # Live theme color editor
+│   │   │   ├── config/         # Feature flags + site config
+│   │   │   └── components/     # AdminSidebar
+│   │   ├── api/
+│   │   │   ├── auth/           # NextAuth handler
+│   │   │   └── debug/seed/     # Database seeding endpoint (dev only)
+│   │   ├── error.tsx           # On-brand error page
+│   │   ├── not-found.tsx       # Custom 404 page
+│   │   ├── sitemap.ts          # Dynamic sitemap (active products only)
+│   │   └── robots.ts           # Search engine directives
+│   ├── components/
+│   │   ├── Navbar.tsx          # Navigation with cart badge + auth status
+│   │   ├── HeroSection.tsx     # Animated hero with particle network
+│   │   ├── Footer.tsx          # Site footer with newsletter + links
+│   │   ├── ProductCard.tsx     # Product card with "Quick Add" hover
+│   │   ├── CartDrawer.tsx      # Slide-out cart with checkout
+│   │   ├── TerminalToast.tsx   # Terminal-style notifications
+│   │   ├── ThemeLoader.tsx     # DB → CSS variable injection (RSC)
+│   │   ├── CrosshairCursor.tsx # Custom cursor
+│   │   ├── CyberBackground.tsx # Animated background
+│   │   ├── NewsletterForm.tsx  # Email subscription form
+│   │   └── ThemeProvider.tsx   # Dark/light mode provider
+│   ├── lib/
+│   │   ├── prisma.ts           # PrismaClient singleton
+│   │   ├── auth.ts             # NextAuth config (JWT + role in session)
+│   │   ├── actions.ts          # Checkout with coupon + stock + Volt Points
+│   │   ├── admin-actions.ts    # All admin CRUD + activity logging
+│   │   └── store.ts            # Zustand store (cart, theme, user state)
+│   ├── middleware.ts           # Route protection + security headers
+│   └── types/next-auth.d.ts    # Extended session types (role, voltPoints)
+├── next.config.mjs             # Image domains + security headers
+└── package.json                # Build: db-toggle → db push → generate → next build
 ```
 
 ---
 
-## 🛠️ DEPLOYMENT & OPERATION
+## 🛠️ LOCAL DEVELOPMENT
 
-### For Operatives (Local Setup)
-
-1. **Clone the Link**:
+1. **Clone:**
    ```bash
    git clone https://github.com/damanjz/volt-techwear-store.git
+   cd volt-techwear-store
    ```
-2. **Configure Node Environment**:
-   Initialize `.env` with your `DATABASE_URL` (Postgres or SQLite).
-3. **Trigger Initialization**:
+
+2. **Install & Setup:**
    ```bash
-   npm install && npx prisma db push
+   npm install
+   npm run db:dev          # Switch to SQLite for local dev
+   npx prisma db push      # Create local database
    ```
-4. **Boot Up System**:
+
+3. **Environment (`.env`):**
+   ```env
+   DATABASE_URL="file:./dev.db"
+   NEXTAUTH_SECRET="your-secret-key"
+   NEXTAUTH_URL="http://localhost:3000"
+   ```
+
+4. **Run:**
    ```bash
    npm run dev
    ```
 
-### Technical Notes for Maintainers
-- **Build Script**: The project includes a `db-toggle.mjs` script that automatically switches the Prisma provider between SQLite and PostgreSQL during `npm run build` to ensure cloud-readiness.
-- **Seeding**: To populate the product database, access the `/api/debug/seed` endpoint once after successful deployment.
+5. **Seed data (dev only):**
+   Visit `http://localhost:3000/api/debug/seed` to populate products, admin user, coupons, and default configs.
+
+6. **Admin access:**
+   Login as `admin@volt.sys` / `admin123` → navigate to `/admin`
 
 ---
 
-## 🧬 COLLABORATION TRANSMISSION
+## 🚀 PRODUCTION (VERCEL)
 
-This platform was developed as a hybrid architecture project. 
+**Environment Variables Required:**
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | Neon PostgreSQL connection string |
+| `NEXTAUTH_SECRET` | JWT signing secret |
+| `NEXTAUTH_URL` | Production URL (`https://volt-techwear-store.vercel.app`) |
 
-- **Lead Architect**: **Antigravity (Agentic AI Developer)**.
-- **System Consultant**: **gpt-oss:120b** (Lead UX/UI Sensory Visionary).
-- **Technician**: **Daman (Operative 094)**.
+The build script automatically switches to PostgreSQL, pushes schema changes, generates the Prisma client, and builds Next.js.
 
-*NOCTRA PROTOCOLS ARE NOW ACTIVE.*  
+---
+
+## 🧬 COLLABORATION
+
+- **Lead Architect:** Antigravity (Agentic AI Developer)
+- **System Consultant:** gpt-oss:120b (Lead UX/UI Visionary)
+- **Technician:** Daman (Operative 094)
+
 🔥 **[ END_OF_TRANSMISSION ]** 🔥
