@@ -6,9 +6,10 @@ import { useEffect, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import ProfileHeader from "./components/ProfileHeader";
 import OrderHistory from "./components/OrderHistory";
+import type { Order, OrderItem } from "@prisma/client";
 
 interface ProfileClientProps {
-  initialOrders: any[];
+  initialOrders: (Order & { items: OrderItem[] })[];
 }
 
 export default function ProfileClient({ initialOrders }: ProfileClientProps) {

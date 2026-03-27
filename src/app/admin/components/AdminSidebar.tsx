@@ -22,7 +22,13 @@ const navItems = [
   { href: "/admin/config", label: "Config", icon: Settings },
 ];
 
-export default function AdminSidebar({ user }: { user: any }) {
+interface AdminUser {
+  email?: string | null;
+  role?: string | null;
+  clearanceLevel?: number | null;
+}
+
+export default function AdminSidebar({ user }: { user: AdminUser }) {
   const pathname = usePathname();
 
   return (

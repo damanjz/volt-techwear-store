@@ -70,6 +70,7 @@ Following a deep architectural review, VOLT represents tier-one e-commerce stand
 - **Next.js 15 Rigor:** Complete CSP header implementation, structured `error.tsx` Catch-all route bounds, decoupled viewport meta-protocols, layout responsiveness (`sizes`), and dedicated SEO crawlers mappings.
 - **RSC & Caching:** Leverages React 19 `cache()` for DB call deduplication and utilizes pure Server Components for static asset rendering to minimize client-side bundle weight.
 - **A11y Engineering:** Rigorous ARIA-compliant overlays (Cart/Navigation) with full keyboard (Escape key) support and semantic radiogroup interactions.
+- **Type Safety Protocol:** Complete eradication of `any` across the core auth layer, server actions, and test suites, enforcing strict Prisma model and NextAuth interface compliance.
 
 ---
 

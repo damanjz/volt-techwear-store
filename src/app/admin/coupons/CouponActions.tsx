@@ -3,8 +3,9 @@
 import { toggleCouponActive, deleteCoupon } from "@/lib/admin-actions";
 import { Power, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import type { Coupon } from "@prisma/client";
 
-export default function CouponActions({ coupon }: { coupon: any }) {
+export default function CouponActions({ coupon }: { coupon: Coupon }) {
   const router = useRouter();
 
   return (

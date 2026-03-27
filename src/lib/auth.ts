@@ -1,5 +1,6 @@
-import { NextAuthOptions } from "next-auth";
+import { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import type { Adapter } from "next-auth/adapters";
 import { prisma } from "@/lib/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
@@ -14,7 +15,7 @@ const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
+  adapter: PrismaAdapter(prisma) as Adapter,
   session: {
     strategy: "jwt",
     maxAge: 24 * 60 * 60, // 24 hours
@@ -70,7 +71,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid credentials");
         }
 
-        return user as any;
+        return user as NextAuthUser;
       }
     })
   ],
@@ -78,9 +79,9 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role;
-        token.voltPoints = (user as any).voltPoints;
-        token.clearanceLevel = (user as any).clearanceLevel;
+        token.role = user.role;
+        token.voltPoints = user.voltPoints;
+        token.clearanceLevel = user.clearanceLevel;
       }
 
       // Handle manual session updates by fetching truth from DB

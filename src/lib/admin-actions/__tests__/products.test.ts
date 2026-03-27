@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createProduct, updateProduct, deleteProduct, toggleProductActive, bulkUpdateProducts } from "../products";
+import { createProduct, deleteProduct, toggleProductActive, bulkUpdateProducts } from "../products";
 import { requireAdmin, logActivity } from "../helpers";
 import { prisma } from "../../prisma";
 import { revalidatePath } from "next/cache";
+import type { Session } from "next-auth";
+import type { Product } from "@prisma/client";
 
 vi.mock("../helpers", () => ({
   requireAdmin: vi.fn(),
@@ -31,7 +33,7 @@ describe("Admin Products Actions", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(requireAdmin).mockResolvedValue({ id: mockAdminId } as any);
+    vi.mocked(requireAdmin).mockResolvedValue({ id: mockAdminId } as Session["user"]);
   });
 
   describe("createProduct", () => {
@@ -59,7 +61,7 @@ describe("Admin Products Actions", () => {
       fd.set("isClassified", "false");
       fd.set("tags", "cyber,armor");
 
-      vi.mocked(prisma.product.create).mockResolvedValueOnce({ id: "prod1", name: "Test Armor" } as any);
+      vi.mocked(prisma.product.create).mockResolvedValueOnce({ id: "prod1", name: "Test Armor" } as Product);
 
       const result = await createProduct(fd);
 
@@ -72,7 +74,7 @@ describe("Admin Products Actions", () => {
 
   describe("deleteProduct", () => {
     it("deletes product and logs activity", async () => {
-      vi.mocked(prisma.product.delete).mockResolvedValueOnce({ id: "prod1", name: "Robe" } as any);
+      vi.mocked(prisma.product.delete).mockResolvedValueOnce({ id: "prod1", name: "Robe" } as Product);
       const result = await deleteProduct("prod1");
 
       expect(prisma.product.delete).toHaveBeenCalledWith({ where: { id: "prod1" } });
@@ -88,8 +90,8 @@ describe("Admin Products Actions", () => {
     });
 
     it("toggles product active status", async () => {
-      vi.mocked(prisma.product.findUnique).mockResolvedValueOnce({ id: "p1", name: "P1", isActive: true } as any);
-      vi.mocked(prisma.product.update).mockResolvedValueOnce({} as any);
+      vi.mocked(prisma.product.findUnique).mockResolvedValueOnce({ id: "p1", name: "P1", isActive: true } as Product);
+      vi.mocked(prisma.product.update).mockResolvedValueOnce({} as Product);
 
       const result = await toggleProductActive("p1");
 
@@ -104,7 +106,7 @@ describe("Admin Products Actions", () => {
 
   describe("bulkUpdateProducts", () => {
     it("deletes multiple products", async () => {
-      vi.mocked(prisma.product.deleteMany).mockResolvedValueOnce({ count: 2 } as any);
+      vi.mocked(prisma.product.deleteMany).mockResolvedValueOnce({ count: 2 });
       
       const result = await bulkUpdateProducts(["p1", "p2"], "delete");
       
@@ -114,7 +116,7 @@ describe("Admin Products Actions", () => {
     });
 
     it("activates multiple products", async () => {
-      vi.mocked(prisma.product.updateMany).mockResolvedValueOnce({ count: 2 } as any);
+      vi.mocked(prisma.product.updateMany).mockResolvedValueOnce({ count: 2 });
       
       const result = await bulkUpdateProducts(["p1", "p2"], "activate");
       

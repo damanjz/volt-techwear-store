@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Plus, AlertTriangle } from "lucide-react";
 import ProductActions from "./ProductActions";
+import type { Product } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -60,7 +61,7 @@ export default async function AdminProducts() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product: any) => (
+            {products.map((product: Product & { _count: { orderItems: number } }) => (
               <tr
                 key={product.id}
                 className="border-b border-white/5 hover:bg-white/5 transition-colors"

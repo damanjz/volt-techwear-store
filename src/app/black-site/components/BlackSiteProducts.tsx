@@ -4,9 +4,10 @@ import { ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useStore } from "@/lib/store";
+import type { Product } from "@prisma/client";
 
 interface BlackSiteProductsProps {
-  products: any[];
+  products: Product[];
 }
 
 export default function BlackSiteProducts({ products }: BlackSiteProductsProps) {

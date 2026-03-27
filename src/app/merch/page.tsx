@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
+import type { Product } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Hardware & Merch",
@@ -40,7 +41,7 @@ export default async function Merch() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {merchProducts.map((product: any) => (
+          {merchProducts.map((product: Product) => (
             <ProductCard key={product.id} {...product} />
           ))}
         </div>

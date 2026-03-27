@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     console.log(`\n\n[SECURITY] DEMO MODE: Email Verification Link for ${emailSanitized}:\n${verifyUrl}\n\n`);
 
     return NextResponse.json({ success: true, message: "Verification link dispatched. Check server console." });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Registration error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

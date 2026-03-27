@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "../prisma";
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { requireAdmin, logActivity } from "./helpers";
 
@@ -14,7 +15,7 @@ export async function createCoupon(formData: FormData) {
   if (!code) throw new Error("Coupon code is required.");
 
   const discountType = formData.get("discountType") as string;
-  if (!ALLOWED_DISCOUNT_TYPES.includes(discountType as any)) {
+  if (!ALLOWED_DISCOUNT_TYPES.includes(discountType as (typeof ALLOWED_DISCOUNT_TYPES)[number])) {
     throw new Error("Invalid discount type. Must be PERCENT or FLAT.");
   }
 
@@ -24,7 +25,7 @@ export async function createCoupon(formData: FormData) {
   if (discountType === "FLAT" && value > 999999) throw new Error("Flat discount is too large.");
 
   const scope = formData.get("scope") as string || "SITE";
-  if (!ALLOWED_SCOPES.includes(scope as any)) {
+  if (!ALLOWED_SCOPES.includes(scope as (typeof ALLOWED_SCOPES)[number])) {
     throw new Error("Invalid coupon scope.");
   }
 
@@ -72,7 +73,7 @@ export async function toggleCouponActive(id: string) {
   return { success: true };
 }
 
-export async function internalValidateCoupon(code: string, cartTotal: number, tx: any) {
+export async function internalValidateCoupon(code: string, cartTotal: number, tx: Prisma.TransactionClient | typeof prisma) {
   const coupon = await tx.coupon.findUnique({
     where: { code: code.toUpperCase() },
   });

@@ -1,5 +1,6 @@
 "use client";
 
+import type { Product } from "@prisma/client";
 import { ShieldAlert, LockKeyhole, ShieldCheck, Zap } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -42,13 +43,13 @@ const TIERS = [
 ];
 
 interface ClearanceUpgradeProps {
-  initialProducts: any[];
+  initialProducts: Product[];
   clearanceLevel: number;
   voltPoints: number;
   updateSession: (data: {
     clearanceLevel: number;
     voltPoints: number;
-  }) => Promise<any>;
+  }) => Promise<unknown>;
 }
 
 export default function ClearanceUpgrade({

@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { requireAdmin, logActivity } from "../helpers";
 import { getServerSession } from "next-auth";
 import { prisma } from "../../prisma";
+import type { ActivityLog } from "@prisma/client";
 
 vi.mock("next-auth", () => ({
   getServerSession: vi.fn(),
@@ -47,7 +48,7 @@ describe("Admin Helpers", () => {
 
   describe("logActivity", () => {
     it("creates an activity log entry via prisma", async () => {
-      vi.mocked(prisma.activityLog.create).mockResolvedValueOnce({} as any);
+      vi.mocked(prisma.activityLog.create).mockResolvedValueOnce({} as ActivityLog);
       
       await logActivity("user1", "TEST_ACTION", "target1", "detail info");
       
@@ -62,7 +63,7 @@ describe("Admin Helpers", () => {
     });
 
     it("uses default empty strings for target and details", async () => {
-      vi.mocked(prisma.activityLog.create).mockResolvedValueOnce({} as any);
+      vi.mocked(prisma.activityLog.create).mockResolvedValueOnce({} as ActivityLog);
       
       await logActivity("user1", "TEST_ACTION");
       

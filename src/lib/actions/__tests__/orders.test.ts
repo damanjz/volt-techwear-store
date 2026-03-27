@@ -1,9 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createOrder } from "../orders";
 import { getServerSession } from "next-auth";
+import type { Session } from "next-auth";
 import { internalValidateCoupon } from "@/lib/admin-actions/orders";
-import { validateCartItems } from "../cart-validation";
-import { prisma } from "../../prisma";
 
 vi.mock("next-auth", () => ({
   getServerSession: vi.fn(),
@@ -44,7 +43,7 @@ describe("Actions - Orders", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getServerSession).mockResolvedValue({ user: { id: mockUserId } } as any);
+    vi.mocked(getServerSession).mockResolvedValue({ user: { id: mockUserId } } as Session);
   });
 
   describe("createOrder", () => {
@@ -55,7 +54,7 @@ describe("Actions - Orders", () => {
 
     it("throws if total is invalid", async () => {
       await expect(createOrder([], -5)).rejects.toThrow("Invalid order total.");
-      await expect(createOrder([], "100" as any)).rejects.toThrow("Invalid order total.");
+      await expect(createOrder([], "100" as unknown as number)).rejects.toThrow("Invalid order total.");
     });
 
     it("throws if a product is no longer available", async () => {
@@ -119,7 +118,7 @@ describe("Actions - Orders", () => {
       mockTx.order.create.mockResolvedValueOnce({ id: "order2" });
       mockTx.user.update.mockResolvedValueOnce({ voltPoints: 100, clearanceLevel: 1 });
       
-      vi.mocked(internalValidateCoupon).mockResolvedValueOnce({ valid: true, discount: 20, couponId: "c1", code: "SAVE20" } as any);
+      vi.mocked(internalValidateCoupon).mockResolvedValueOnce({ valid: true, discount: 20, couponId: "c1", code: "SAVE20" } as Awaited<ReturnType<typeof internalValidateCoupon>>);
 
       const result = await createOrder(cartItems, 100, "SAVE20");
 

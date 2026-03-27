@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Coupon } from "@prisma/client";
 import CouponActions from "./CouponActions";
 import CouponForm from "./CouponForm";
 
@@ -45,7 +46,7 @@ export default async function AdminCoupons() {
                 </td>
               </tr>
             ) : (
-              coupons.map((coupon: any) => (
+              coupons.map((coupon: Coupon) => (
                 <tr key={coupon.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                   <td className="p-4 font-mono text-sm text-volt font-bold">{coupon.code}</td>
                   <td className="p-4 font-mono text-xs text-white/50">{coupon.discountType}</td>

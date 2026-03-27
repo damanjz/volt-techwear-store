@@ -68,9 +68,8 @@ describe("validateCartItems", () => {
   });
 
   it("rejects items with non-numeric quantity", () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(() =>
-      validateCartItems([{ ...validItem, quantity: "two" as any }])
+      validateCartItems([{ ...validItem, quantity: "two" as unknown as number }])
     ).toThrow("Invalid quantity");
   });
 
@@ -87,9 +86,8 @@ describe("validateCartItems", () => {
   });
 
   it("rejects items with non-string id", () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(() =>
-      validateCartItems([{ ...validItem, id: 123 as any }])
+      validateCartItems([{ ...validItem, id: 123 as unknown as string }])
     ).toThrow("Invalid item in cart.");
   });
 

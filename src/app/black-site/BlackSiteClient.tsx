@@ -8,9 +8,10 @@ import BlackSiteHero from "./components/BlackSiteHero";
 import BlackSiteTeaser from "./components/BlackSiteTeaser";
 import ClearanceUpgrade from "./components/ClearanceUpgrade";
 import BlackSiteProducts from "./components/BlackSiteProducts";
+import type { Product } from "@prisma/client";
 
 interface BlackSiteProps {
-  initialProducts: any[];
+  initialProducts: Product[];
   clearanceLevel: number;
   voltPoints: number;
   isLoggedIn: boolean;

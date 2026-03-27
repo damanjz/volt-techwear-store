@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import UserActions from "./UserActions";
+import type { User } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,7 @@ export default async function AdminUsers() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user: any) => (
+            {users.map((user: User & { _count: { orders: number } }) => (
               <tr key={user.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                 <td className="p-4 font-mono text-sm text-white/90">{user.email || "—"}</td>
                 <td className="p-4">

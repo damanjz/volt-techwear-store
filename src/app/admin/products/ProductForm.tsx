@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import type { Product } from "@prisma/client";
 
-export default function ProductForm({ product }: { product?: any }) {
+export default function ProductForm({ product }: { product?: Product }) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const isEditing = !!product;

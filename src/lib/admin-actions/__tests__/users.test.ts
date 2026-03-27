@@ -3,6 +3,8 @@ import { updateUserRole, updateUserPoints, updateUserClearance, toggleUserBan } 
 import { requireAdmin, logActivity } from "../helpers";
 import { prisma } from "../../prisma";
 import { revalidatePath } from "next/cache";
+import type { Session } from "next-auth";
+import type { User } from "@prisma/client";
 
 vi.mock("../helpers", () => ({
   requireAdmin: vi.fn(),
@@ -27,7 +29,7 @@ describe("Admin Users Actions", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(requireAdmin).mockResolvedValue({ id: mockAdminId } as any);
+    vi.mocked(requireAdmin).mockResolvedValue({ id: mockAdminId } as Session["user"]);
   });
 
   describe("updateUserRole", () => {
@@ -36,7 +38,7 @@ describe("Admin Users Actions", () => {
     });
 
     it("updates role and logs activity", async () => {
-      vi.mocked(prisma.user.update).mockResolvedValueOnce({} as any);
+      vi.mocked(prisma.user.update).mockResolvedValueOnce({} as User);
 
       const result = await updateUserRole("user1", "ADMIN");
 
@@ -58,7 +60,7 @@ describe("Admin Users Actions", () => {
     });
 
     it("updates points and logs activity", async () => {
-      vi.mocked(prisma.user.update).mockResolvedValueOnce({} as any);
+      vi.mocked(prisma.user.update).mockResolvedValueOnce({} as User);
 
       const result = await updateUserPoints("user1", 1500);
 
@@ -79,7 +81,7 @@ describe("Admin Users Actions", () => {
     });
 
     it("updates clearance and logs activity", async () => {
-      vi.mocked(prisma.user.update).mockResolvedValueOnce({} as any);
+      vi.mocked(prisma.user.update).mockResolvedValueOnce({} as User);
 
       const result = await updateUserClearance("user1", 2);
 
@@ -100,8 +102,8 @@ describe("Admin Users Actions", () => {
     });
 
     it("toggles ban status and logs activity", async () => {
-      vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({ id: "user1", email: "test@x.com", isBanned: false } as any);
-      vi.mocked(prisma.user.update).mockResolvedValueOnce({} as any);
+      vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({ id: "user1", email: "test@x.com", isBanned: false } as User);
+      vi.mocked(prisma.user.update).mockResolvedValueOnce({} as User);
 
       const result = await toggleUserBan("user1");
 

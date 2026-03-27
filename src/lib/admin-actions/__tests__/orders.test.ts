@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createCoupon, deleteCoupon, toggleCouponActive, validateCoupon, upsertConfig, getConfigs } from "../orders";
+import { createCoupon, deleteCoupon, validateCoupon, upsertConfig, getConfigs } from "../orders";
 import { requireAdmin, logActivity } from "../helpers";
 import { prisma } from "../../prisma";
 import { revalidatePath } from "next/cache";
+import type { Session } from "next-auth";
+import type { Coupon, SiteConfig } from "@prisma/client";
 
 vi.mock("../helpers", () => ({
   requireAdmin: vi.fn(),
@@ -33,7 +35,7 @@ describe("Admin Orders/Coupons Actions", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(requireAdmin).mockResolvedValue({ id: mockAdminId } as any);
+    vi.mocked(requireAdmin).mockResolvedValue({ id: mockAdminId } as Session["user"]);
   });
 
   describe("createCoupon", () => {
@@ -56,7 +58,7 @@ describe("Admin Orders/Coupons Actions", () => {
       fd.set("value", "20");
       fd.set("scope", "SITE");
 
-      vi.mocked(prisma.coupon.create).mockResolvedValueOnce({ id: "c1", code: "SAVE20" } as any);
+      vi.mocked(prisma.coupon.create).mockResolvedValueOnce({ id: "c1", code: "SAVE20" } as Coupon);
 
       const result = await createCoupon(fd);
 
@@ -69,7 +71,7 @@ describe("Admin Orders/Coupons Actions", () => {
 
   describe("deleteCoupon", () => {
     it("deletes a coupon and logs activity", async () => {
-      vi.mocked(prisma.coupon.delete).mockResolvedValueOnce({ id: "c1", code: "DEL1" } as any);
+      vi.mocked(prisma.coupon.delete).mockResolvedValueOnce({ id: "c1", code: "DEL1" } as Coupon);
 
       const result = await deleteCoupon("c1");
 
@@ -97,7 +99,7 @@ describe("Admin Orders/Coupons Actions", () => {
         usageLimit: 0,
         usedCount: 0,
         expiresAt: null,
-      } as any);
+      } as Coupon);
 
       const res = await validateCoupon("FLAT10", 50);
       expect(res.valid).toBe(true);
@@ -114,7 +116,7 @@ describe("Admin Orders/Coupons Actions", () => {
         usageLimit: 0,
         usedCount: 0,
         expiresAt: null,
-      } as any);
+      } as Coupon);
 
       const res = await validateCoupon("PCT20", 50);
       expect(res.valid).toBe(true);
@@ -128,7 +130,7 @@ describe("Admin Orders/Coupons Actions", () => {
     });
 
     it("upserts config and logs activity", async () => {
-      vi.mocked(prisma.siteConfig.upsert).mockResolvedValueOnce({} as any);
+      vi.mocked(prisma.siteConfig.upsert).mockResolvedValueOnce({} as SiteConfig);
 
       const result = await upsertConfig("theme.volt", "true");
 
