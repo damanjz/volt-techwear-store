@@ -23,6 +23,7 @@ interface DesktopNavProps {
   isLoggedIn: boolean;
   theme: string;
   cartCount: number;
+  voltPoints?: number;
   toggleTheme: () => void;
   toggleCart: () => void;
   onOpenMobileMenu: () => void;
@@ -35,6 +36,7 @@ export default function DesktopNav({
   isLoggedIn,
   theme,
   cartCount,
+  voltPoints,
   toggleTheme,
   toggleCart,
   onOpenMobileMenu,
@@ -90,12 +92,15 @@ export default function DesktopNav({
         )}
         <Link
           href="/profile"
-          className={`hover:text-volt transition-colors ${
+          className={`hover:text-volt transition-colors flex items-center gap-2 ${
             mounted && isLoggedIn ? "text-volt" : ""
           }`}
           aria-label="Profile"
         >
           <User size={20} />
+          {mounted && isLoggedIn && voltPoints !== undefined && (
+            <span className="font-mono text-xs hidden lg:block tracking-widest">{voltPoints} VP</span>
+          )}
         </Link>
         <button
           className="hover:text-volt transition-colors relative"

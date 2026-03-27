@@ -22,6 +22,7 @@ export default function Navbar() {
 
   const isLoggedIn = status === "authenticated";
   const isAdmin = session?.user?.role === "ADMIN";
+  const voltPoints = session?.user?.voltPoints;
 
   useEffect(() => {
     setMounted(true);
@@ -60,6 +61,7 @@ export default function Navbar() {
             isLoggedIn={isLoggedIn}
             theme={theme}
             cartCount={mounted ? getCartCount() : 0}
+            voltPoints={voltPoints}
             toggleTheme={toggleTheme}
             toggleCart={toggleCart}
             onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
@@ -72,6 +74,7 @@ export default function Navbar() {
         onClose={handleCloseMobileMenu}
         mounted={mounted}
         isAdmin={isAdmin}
+        voltPoints={voltPoints}
       />
 
       <CartDrawer />

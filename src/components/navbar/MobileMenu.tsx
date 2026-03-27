@@ -10,6 +10,7 @@ interface MobileMenuProps {
   onClose: () => void;
   mounted: boolean;
   isAdmin: boolean;
+  voltPoints?: number;
 }
 
 const mobileLinks = [
@@ -25,6 +26,7 @@ export default function MobileMenu({
   onClose,
   mounted,
   isAdmin,
+  voltPoints,
 }: MobileMenuProps) {
   // Close mobile menu on resize to desktop
   useEffect(() => {
@@ -70,13 +72,20 @@ export default function MobileMenu({
               <span className="font-display font-black text-xl uppercase tracking-tighter">
                 VOLT<span className="text-volt">.</span>
               </span>
-              <button
-                onClick={onClose}
-                className="text-foreground/50 hover:text-cyber-red transition-colors p-2"
-                aria-label="Close menu"
-              >
-                <X size={24} />
-              </button>
+              <div className="flex items-center gap-4">
+                {mounted && voltPoints !== undefined && (
+                  <span className="font-mono text-xs text-volt tracking-widest bg-volt/10 px-2 py-1 rounded">
+                    {voltPoints} VP
+                  </span>
+                )}
+                <button
+                  onClick={onClose}
+                  className="text-foreground/50 hover:text-cyber-red transition-colors p-2"
+                  aria-label="Close menu"
+                >
+                  <X size={24} />
+                </button>
+              </div>
             </div>
 
             {/* Links */}
