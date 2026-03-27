@@ -20,6 +20,7 @@ export default function ProductImage({
           src={imageUrl}
           alt={name}
           fill
+          sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover opacity-90"
           priority
         />

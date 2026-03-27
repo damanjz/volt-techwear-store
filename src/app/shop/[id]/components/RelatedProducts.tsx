@@ -31,6 +31,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                 src={p.imageUrl}
                 alt={p.name}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
               />
             </div>

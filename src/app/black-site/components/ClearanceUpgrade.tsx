@@ -95,6 +95,7 @@ export default function ClearanceUpgrade({
                     src={item.imageUrl}
                     alt="Classified"
                     fill
+                    sizes="(max-width: 768px) 100vw, 20vw"
                     className="object-cover opacity-15 blur-sm grayscale"
                   />
                   <div className="absolute inset-0 bg-cyber-red/5 backdrop-blur-[12px]" />

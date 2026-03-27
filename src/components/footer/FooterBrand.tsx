@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const socialLinks = [
   { label: "IG", href: "https://instagram.com" },
   { label: "X", href: "https://x.com" },
@@ -16,7 +18,7 @@ export default function FooterBrand() {
       </p>
       <div className="flex gap-4">
         {socialLinks.map((link) => (
-          <a
+          <Link
             key={link.label}
             href={link.href}
             target="_blank"
@@ -24,7 +26,7 @@ export default function FooterBrand() {
             className="font-mono text-[10px] uppercase tracking-widest text-foreground/40 hover:text-volt transition-colors border border-foreground/10 px-3 py-1.5"
           >
             {link.label}
-          </a>
+          </Link>
         ))}
       </div>
     </div>
