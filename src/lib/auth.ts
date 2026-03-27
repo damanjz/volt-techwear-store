@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error(`Password must be between ${MIN_PASSWORD_LENGTH} and ${MAX_PASSWORD_LENGTH} characters`);
         }
 
-        let user = await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
           where: { email }
         });
 
@@ -75,7 +75,7 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role;
