@@ -44,7 +44,7 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemP
 
         <div className="flex items-end justify-between mt-4">
           <div className="font-mono font-bold text-volt">
-            ${(item.price * item.quantity).toFixed(2)}
+            ${((item.price * item.quantity) / 100).toFixed(2)}
           </div>
 
           {/* Quantity Controls */}

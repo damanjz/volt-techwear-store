@@ -72,7 +72,7 @@ export default function BlackSiteProducts({ products }: BlackSiteProductsProps) 
                   {item.category}
                 </span>
                 <span className="font-mono font-bold text-sm text-volt">
-                  ${item.price.toFixed(2)}
+                  ${(item.price / 100).toFixed(2)}
                 </span>
               </div>
               <h3 className="font-mono font-medium text-lg uppercase tracking-wider text-foreground">

@@ -41,7 +41,7 @@ export default function OrderHistory({ orders }: OrderHistoryProps) {
                   Status: {order.status} // {new Date(order.createdAt).toLocaleDateString()}
                 </div>
               </div>
-              <div className="font-mono font-bold">${order.total.toFixed(2)}</div>
+              <div className="font-mono font-bold">${(order.total / 100).toFixed(2)}</div>
             </div>
           ))
         )}

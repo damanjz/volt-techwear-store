@@ -72,7 +72,7 @@ export default function ProductCard({ id, name, price, category, imageUrl, isNew
       <div className="p-4 flex flex-col gap-2 relative z-10 bg-background transition-colors duration-500">
         <div className="flex justify-between items-start">
           <div className="font-mono text-[10px] text-foreground/50 uppercase tracking-widest">{category}</div>
-          <div className="font-mono font-bold text-volt text-sm">${price.toFixed(2)}</div>
+          <div className="font-mono font-bold text-volt text-sm">${(price / 100).toFixed(2)}</div>
         </div>
         <Link href={`/shop/${id}`}>
           <h3 className="font-sans font-medium text-lg leading-tight group-hover:text-volt transition-colors">{name}</h3>

@@ -3,7 +3,7 @@
 import { prisma } from "../prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { validateCoupon } from "@/lib/admin-actions";
+import { internalValidateCoupon } from "@/lib/admin-actions/orders";
 import { validateCartItems } from "./cart-validation";
 import type { CartItemInput } from "./cart-validation";
 import { VOLT_POINTS_RATE, CLEARANCE_THRESHOLDS } from "./constants";
@@ -49,7 +49,7 @@ export async function createOrder(cartItems: CartItemInput[], total: number, cou
       let appliedCoupon: string | null = null;
 
       if (sanitizedCoupon) {
-        const couponResult = await validateCoupon(sanitizedCoupon, serverTotal);
+        const couponResult = await internalValidateCoupon(sanitizedCoupon, serverTotal, tx);
         if (couponResult.valid && couponResult.discount) {
           discount = couponResult.discount;
           appliedCoupon = couponResult.code || null;

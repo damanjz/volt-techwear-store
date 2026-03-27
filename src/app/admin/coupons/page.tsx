@@ -50,7 +50,7 @@ export default async function AdminCoupons() {
                   <td className="p-4 font-mono text-sm text-volt font-bold">{coupon.code}</td>
                   <td className="p-4 font-mono text-xs text-white/50">{coupon.discountType}</td>
                   <td className="p-4 font-mono text-xs text-green-400">
-                    {coupon.discountType === "PERCENT" ? `${coupon.value}%` : `$${coupon.value}`}
+                    {coupon.discountType === "PERCENT" ? `${coupon.value}%` : `$${(coupon.value / 100).toFixed(2)}`}
                   </td>
                   <td className="p-4 font-mono text-xs text-white/50">{coupon.scope}</td>
                   <td className="p-4 font-mono text-xs text-white/50">

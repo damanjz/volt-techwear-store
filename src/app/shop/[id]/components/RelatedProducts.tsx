@@ -42,7 +42,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                 {p.name}
               </div>
               <div className="font-mono text-volt text-xs mt-1">
-                ${p.price.toFixed(2)}
+                ${(p.price / 100).toFixed(2)}
               </div>
             </div>
           </div>

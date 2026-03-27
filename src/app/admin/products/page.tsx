@@ -92,7 +92,7 @@ export default async function AdminProducts() {
                   {product.category}
                 </td>
                 <td className="p-4 font-mono text-xs text-green-400">
-                  ${product.price.toFixed(2)}
+                  ${(product.price / 100).toFixed(2)}
                 </td>
                 <td className="p-4">
                   <div className="flex items-center gap-2">

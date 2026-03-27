@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createOrder } from "../orders";
 import { getServerSession } from "next-auth";
-import { validateCoupon } from "@/lib/admin-actions";
+import { internalValidateCoupon } from "@/lib/admin-actions/orders";
 import { validateCartItems } from "../cart-validation";
 import { prisma } from "../../prisma";
 
@@ -9,8 +9,8 @@ vi.mock("next-auth", () => ({
   getServerSession: vi.fn(),
 }));
 
-vi.mock("@/lib/admin-actions", () => ({
-  validateCoupon: vi.fn(),
+vi.mock("@/lib/admin-actions/orders", () => ({
+  internalValidateCoupon: vi.fn(),
 }));
 
 vi.mock("../cart-validation", () => ({
@@ -119,11 +119,11 @@ describe("Actions - Orders", () => {
       mockTx.order.create.mockResolvedValueOnce({ id: "order2" });
       mockTx.user.update.mockResolvedValueOnce({ voltPoints: 100, clearanceLevel: 1 });
       
-      vi.mocked(validateCoupon).mockResolvedValueOnce({ valid: true, discount: 20, couponId: "c1", code: "SAVE20" } as any);
+      vi.mocked(internalValidateCoupon).mockResolvedValueOnce({ valid: true, discount: 20, couponId: "c1", code: "SAVE20" } as any);
 
       const result = await createOrder(cartItems, 100, "SAVE20");
 
-      expect(validateCoupon).toHaveBeenCalledWith("SAVE20", 100);
+      expect(internalValidateCoupon).toHaveBeenCalledWith("SAVE20", 100, mockTx);
       
       expect(mockTx.order.create).toHaveBeenCalledWith(expect.objectContaining({
         data: expect.objectContaining({

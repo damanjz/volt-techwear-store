@@ -70,7 +70,7 @@ export default function CartDrawer() {
 
       if (result.success) {
         const msg = result.discount
-          ? `[REQUISITION_CONFIRMED]: Order ${result.orderId}. Saved $${result.discount.toFixed(2)}!`
+          ? `[REQUISITION_CONFIRMED]: Order ${result.orderId}. Saved $${(result.discount / 100).toFixed(2)}!`
           : `[REQUISITION_CONFIRMED]: Order ${result.orderId} initialized.`;
         addToast(msg, "success");
 

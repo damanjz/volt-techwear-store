@@ -43,7 +43,7 @@ describe("sanitizeString", () => {
 
 describe("validatePrice", () => {
   it("accepts a valid price string", () => {
-    expect(validatePrice("29.99")).toBe(29.99);
+    expect(validatePrice("29.99")).toBe(2999);
   });
 
   it("accepts zero", () => {
@@ -51,11 +51,11 @@ describe("validatePrice", () => {
   });
 
   it("accepts the upper boundary 999999", () => {
-    expect(validatePrice("999999")).toBe(999999);
+    expect(validatePrice("999999")).toBe(99999900);
   });
 
   it("rounds to two decimal places", () => {
-    expect(validatePrice("19.999")).toBe(20);
+    expect(validatePrice("19.999")).toBe(2000);
   });
 
   it("defaults null to 0", () => {

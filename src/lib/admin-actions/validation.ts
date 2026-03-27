@@ -11,8 +11,8 @@ export function validateImageUrl(raw: string | null): string {
 }
 
 export function validatePrice(value: string | null): number {
-  const price = parseFloat(value || "0");
-  if (isNaN(price) || price < 0 || price > 999999) {
+  const price = Math.round(parseFloat(value || "0") * 100);
+  if (isNaN(price) || price < 0 || price > 99999900) {
     throw new Error("Invalid price. Must be between 0 and 999,999.");
   }
   return Math.round(price * 100) / 100;

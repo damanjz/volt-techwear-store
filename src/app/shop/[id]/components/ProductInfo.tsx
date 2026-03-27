@@ -74,7 +74,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           </span>
           <div className="flex items-center gap-3">
             <span className="font-mono font-bold text-volt text-2xl">
-              ${product.price.toFixed(2)}
+              ${(product.price / 100).toFixed(2)}
             </span>
             <button
               onClick={handleShare}

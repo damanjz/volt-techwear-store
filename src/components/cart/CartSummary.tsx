@@ -71,7 +71,7 @@ export default function CartSummary({
           Subtotal
         </span>
         <span className="text-xl font-bold text-volt">
-          ${subtotal.toFixed(2)}
+          ${(subtotal / 100).toFixed(2)}
         </span>
       </div>
 

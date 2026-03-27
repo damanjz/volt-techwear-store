@@ -33,7 +33,7 @@ export async function createCoupon(formData: FormData) {
       code,
       description: (formData.get("description") as string || "").trim().slice(0, 500),
       discountType,
-      value: Math.round(value * 100) / 100,
+      value: discountType === "FLAT" ? Math.round(value * 100) : Math.round(value),
       scope,
       category: formData.get("category") as string || null,
       usageLimit: Math.max(0, parseInt(formData.get("usageLimit") as string) || 0),
@@ -72,8 +72,8 @@ export async function toggleCouponActive(id: string) {
   return { success: true };
 }
 
-export async function validateCoupon(code: string, cartTotal: number) {
-  const coupon = await prisma.coupon.findUnique({
+export async function internalValidateCoupon(code: string, cartTotal: number, tx: any) {
+  const coupon = await tx.coupon.findUnique({
     where: { code: code.toUpperCase() },
   });
 
@@ -84,18 +84,24 @@ export async function validateCoupon(code: string, cartTotal: number) {
 
   let discount = 0;
   if (coupon.discountType === "PERCENT") {
-    discount = (cartTotal * coupon.value) / 100;
+    // value is an integer percentage (e.g. 20 for 20%), total in cents
+    discount = Math.floor((cartTotal * coupon.value) / 100);
   } else {
+    // value is in cents, discount cannot exceed cartTotal
     discount = Math.min(coupon.value, cartTotal);
   }
 
   return {
     valid: true,
-    discount: Math.round(discount * 100) / 100,
+    discount,
     couponId: coupon.id,
     code: coupon.code,
     description: coupon.description,
   };
+}
+
+export async function validateCoupon(code: string, cartTotal: number) {
+  return internalValidateCoupon(code, cartTotal, prisma);
 }
 
 const ALLOWED_CONFIG_KEYS = new Set([

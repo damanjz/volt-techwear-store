@@ -61,7 +61,7 @@ function OrderRow({ order }: { readonly order: Order }) {
         {order.items.length} items
       </td>
       <td className="py-3 font-mono text-xs text-green-400">
-        ${order.total.toFixed(2)}
+        ${(order.total / 100).toFixed(2)}
       </td>
       <td className="py-3">
         <span

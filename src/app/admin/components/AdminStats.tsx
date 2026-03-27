@@ -43,7 +43,7 @@ function buildStatCards(stats: AdminStatsProps): readonly StatCardData[] {
   return [
     {
       label: "Total Revenue",
-      value: `$${stats.revenue.toFixed(2)}`,
+      value: `$${(stats.revenue / 100).toFixed(2)}`,
       icon: DollarSign,
       color: "text-green-400",
       bg: "bg-green-400/10",
