@@ -289,8 +289,35 @@ export async function GET(request: Request) {
         role: "ADMIN",
         clearanceLevel: 3,
         voltPoints: 99999,
+        emailVerified: new Date(),
       },
     });
+
+    // Seed clearance level demo users
+    const demoPass = process.env.SEED_ADMIN_PASSWORD || "password123";
+    const demoPasswordHash = await bcrypt.hash(demoPass, 12);
+    
+    const demoUsers = [
+      { email: "lvl1@volt.sys", name: "Operative Prime", voltPoints: 100, clearanceLevel: 1, role: "USER" },
+      { email: "lvl2@volt.sys", name: "Operative Sigma", voltPoints: 6000, clearanceLevel: 2, role: "USER" },
+      { email: "lvl3@volt.sys", name: "Operative Omega", voltPoints: 20000, clearanceLevel: 3, role: "USER" },
+    ];
+
+    for (const u of demoUsers) {
+      await prisma.user.upsert({
+        where: { email: u.email },
+        update: {
+          password: demoPasswordHash,
+          emailVerified: new Date(),
+          ...u
+        },
+        create: {
+          password: demoPasswordHash,
+          emailVerified: new Date(),
+          ...u
+        }
+      });
+    }
 
     // Seed coupons
     for (const c of coupons) {
