@@ -49,19 +49,14 @@ export const authOptions: NextAuthOptions = {
           where: { email }
         });
 
-        // Auto-register if user doesn't exist
+        // Removed auto-register to prevent unauthorized account creation
         if (!user) {
-          const hashedPassword = await bcrypt.hash(credentials.password, 12);
-          user = await prisma.user.create({
-            data: {
-              email,
-              password: hashedPassword,
-              name: email.split('@')[0],
-              voltPoints: 100,
-              clearanceLevel: 1
-            }
-          });
-          return user as any;
+          throw new Error("Invalid credentials");
+        }
+
+        // Check if email is verified
+        if (!user.emailVerified) {
+          throw new Error("Email not verified. Check server console for verification link.");
         }
 
         // Check if user is banned
@@ -88,10 +83,24 @@ export const authOptions: NextAuthOptions = {
         token.clearanceLevel = (user as any).clearanceLevel;
       }
 
-      // Handle manual session updates
-      if (trigger === "update" && session) {
-        token.voltPoints = session.voltPoints;
-        token.clearanceLevel = session.clearanceLevel;
+      // Handle manual session updates by fetching truth from DB
+      if (trigger === "update" && token.id) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { voltPoints: true, clearanceLevel: true, role: true, isBanned: true }
+          });
+          
+          if (dbUser) {
+            token.voltPoints = dbUser.voltPoints;
+            token.clearanceLevel = dbUser.clearanceLevel;
+            token.role = dbUser.role;
+            // Unset role if banned so session effectively dies or limits them
+            if (dbUser.isBanned) token.role = "BANNED";
+          }
+        } catch (error) {
+          console.error("JWT Update - Failed to fetch user from DB:", error);
+        }
       }
 
       return token;

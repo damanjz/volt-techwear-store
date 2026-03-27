@@ -246,11 +246,11 @@ export async function GET(request: Request) {
   // Protect seed endpoint with a secret key
   const { searchParams } = new URL(request.url);
   const key = searchParams.get("key");
-  const secret = process.env.NEXTAUTH_SECRET;
+  const secret = process.env.SEED_SECRET;
 
   if (!secret || key !== secret) {
     return NextResponse.json(
-      { error: "Unauthorized" },
+      { error: "Unauthorized. Verify SEED_SECRET in env." },
       { status: 403 }
     );
   }
@@ -267,7 +267,12 @@ export async function GET(request: Request) {
 
     // Seed admin user with secure password from env
     const adminEmail = process.env.ADMIN_EMAIL || "admin@volt.sys";
-    const adminPass = process.env.ADMIN_PASSWORD || "admin123";
+    const adminPass = process.env.SEED_ADMIN_PASSWORD;
+
+    if (!adminPass) {
+      throw new Error("SEED_ADMIN_PASSWORD is not set in environment.");
+    }
+
     const adminPassword = await bcrypt.hash(adminPass, 12);
     await prisma.user.upsert({
       where: { email: adminEmail },

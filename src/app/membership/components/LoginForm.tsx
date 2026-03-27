@@ -12,11 +12,37 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const [successMsg, setSuccessMsg] = useState("");
 
-  async function handleLogin(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    setSuccessMsg("");
+
+    if (!isLogin) {
+      try {
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error || "Registration failed.");
+        } else {
+          setSuccessMsg(data.message);
+          setIsLogin(true);
+        }
+      } catch {
+        setError("Connection failed. Try again.");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
 
     try {
       const result = await signIn("credentials", {
@@ -26,7 +52,7 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        setError("Invalid credentials. Please try again.");
+        setError(result.error);
       } else {
         router.push("/profile");
         router.refresh();
@@ -44,11 +70,17 @@ export default function LoginForm() {
         <div className="flex items-center gap-2 mb-6">
           <Shield size={18} className="text-cyber-red" />
           <h2 className="font-mono text-sm uppercase tracking-widest text-cyber-red">
-            Operative Authentication
+            {isLogin ? "Operative Authentication" : "New Operative Registration"}
           </h2>
         </div>
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        {successMsg && (
+          <div className="mb-4 text-green-400 text-xs font-mono bg-green-400/10 border border-green-400/20 px-3 py-2">
+            {successMsg}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label htmlFor="login-email" className="font-mono text-[10px] uppercase tracking-widest text-foreground/50 mb-1 block text-left">
               Syndicate ID (Email)
@@ -105,18 +137,32 @@ export default function LoginForm() {
             {loading ? (
               <>
                 <Loader2 size={16} className="animate-spin" />
-                Authenticating...
+                {isLogin ? "Authenticating..." : "Registering..."}
               </>
             ) : (
               <>
                 <Shield size={16} />
-                Initialize / Login
+                {isLogin ? "Initialize / Login" : "Initialize / Register"}
               </>
             )}
           </button>
 
           <p className="font-mono text-[10px] text-foreground/40 text-center mt-1">
-            New operatives are auto-registered on first login
+            {isLogin ? (
+              <>
+                New operative?{" "}
+                <button type="button" onClick={() => { setIsLogin(false); setError(""); setSuccessMsg(""); }} className="text-cyber-red hover:underline">
+                  Register here
+                </button>
+              </>
+            ) : (
+              <>
+                Already an operative?{" "}
+                <button type="button" onClick={() => { setIsLogin(true); setError(""); setSuccessMsg(""); }} className="text-cyber-red hover:underline">
+                  Login here
+                </button>
+              </>
+            )}
           </p>
         </form>
       </div>

@@ -18,12 +18,12 @@ export default async function BlackSitePage() {
   const voltPoints = session?.user?.voltPoints ?? 0;
   const isLoggedIn = !!session?.user;
 
-  // Only fetch products if user has some clearance
-  const products = isLoggedIn
+  const hasClearance = clearanceLevel >= 3;
+
+  // Only fetch products if user has Tier 3 clearance
+  const products = hasClearance
     ? await prisma.product.findMany({
-        where: {
-          id: { startsWith: "bs-" },
-        },
+        where: { id: { startsWith: "bs-" } },
       })
     : [];
 
