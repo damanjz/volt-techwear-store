@@ -28,6 +28,16 @@ export default function MobileMenu({
   isAdmin,
   voltPoints,
 }: MobileMenuProps) {
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   // Close mobile menu on resize to desktop
   useEffect(() => {
     const handleResize = () => {
@@ -65,6 +75,9 @@ export default function MobileMenu({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
             className="fixed top-0 right-0 w-full max-w-sm h-full bg-background border-l border-foreground/10 z-50 flex flex-col"
           >
             {/* Header */}

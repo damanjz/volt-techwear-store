@@ -8,38 +8,77 @@ import {
 } from "@/lib/admin-actions";
 import { Shield, Ban, Crown } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useToastStore } from "@/components/TerminalToast";
 
-export default function UserActions({ user }: { user: any }) {
+interface UserActionsUser {
+  id: string;
+  email: string | null;
+  role: string;
+  isBanned: boolean;
+  clearanceLevel: number;
+  voltPoints: number;
+}
+
+export default function UserActions({ user }: { user: UserActionsUser }) {
   const router = useRouter();
+  const { addToast } = useToastStore();
 
   const handleRoleToggle = async () => {
     const newRole = user.role === "ADMIN" ? "USER" : "ADMIN";
     if (!confirm(`Set ${user.email} to ${newRole}?`)) return;
-    await updateUserRole(user.id, newRole);
-    router.refresh();
+    try {
+      await updateUserRole(user.id, newRole);
+      router.refresh();
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Failed to update role";
+      addToast(`[ADMIN_ERR]: ${msg}`, "alert");
+    }
   };
 
   const handleBanToggle = async () => {
     const action = user.isBanned ? "unban" : "ban";
     if (!confirm(`${action} ${user.email}?`)) return;
-    await toggleUserBan(user.id);
-    router.refresh();
+    try {
+      await toggleUserBan(user.id);
+      router.refresh();
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Failed to toggle ban";
+      addToast(`[ADMIN_ERR]: ${msg}`, "alert");
+    }
   };
 
   const handleClearanceChange = async () => {
     const level = prompt("Set clearance level (1-3):", String(user.clearanceLevel));
     if (!level) return;
     const num = parseInt(level);
-    if (num < 1 || num > 3) { alert("Must be 1-3"); return; }
-    await updateUserClearance(user.id, num);
-    router.refresh();
+    if (num < 1 || num > 3) {
+      addToast("[ADMIN_ERR]: Clearance must be 1-3", "alert");
+      return;
+    }
+    try {
+      await updateUserClearance(user.id, num);
+      router.refresh();
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Failed to update clearance";
+      addToast(`[ADMIN_ERR]: ${msg}`, "alert");
+    }
   };
 
   const handlePointsChange = async () => {
     const points = prompt("Set Volt Points:", String(user.voltPoints));
     if (!points) return;
-    await updateUserPoints(user.id, parseInt(points));
-    router.refresh();
+    const parsed = parseInt(points);
+    if (isNaN(parsed) || parsed < 0) {
+      addToast("[ADMIN_ERR]: Points must be a non-negative number", "alert");
+      return;
+    }
+    try {
+      await updateUserPoints(user.id, parsed);
+      router.refresh();
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Failed to update points";
+      addToast(`[ADMIN_ERR]: ${msg}`, "alert");
+    }
   };
 
   return (

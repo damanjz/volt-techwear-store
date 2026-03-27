@@ -37,6 +37,16 @@ export default function CartDrawer() {
     setIsMounted(true);
   }, []);
 
+  // Close on Escape key
+  useEffect(() => {
+    if (!isCartOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") toggleCart();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isCartOpen, toggleCart]);
+
   // Prevent body scroll when cart is open
   useEffect(() => {
     if (isCartOpen) {
@@ -138,6 +148,9 @@ export default function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Shopping cart"
             className="fixed top-0 right-0 w-full md:w-[480px] h-full bg-background border-l border-foreground/10 z-50 flex flex-col shadow-2xl"
           >
             {/* Header */}

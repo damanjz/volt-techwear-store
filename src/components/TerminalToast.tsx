@@ -19,7 +19,7 @@ interface ToastStore {
 export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
   addToast: (message, type = "system") => {
-    const id = Math.random().toString(36).substring(2, 9);
+    const id = crypto.randomUUID();
     set((state) => ({ toasts: [...state.toasts, { id, message, type }] }));
     
     // Auto remove after 4 seconds
@@ -54,9 +54,10 @@ export default function TerminalToasts() {
                 <Terminal size={12} />
                 <span>Transmission_Intercept</span>
               </div>
-              <button 
+              <button
                 onClick={() => removeToast(toast.id)}
                 className="text-foreground/30 hover:text-white transition-colors"
+                aria-label="Dismiss notification"
               >
                 <X size={14} />
               </button>

@@ -16,6 +16,10 @@ export default function CyberBackground() {
 
     let animationFrameId: number;
 
+    // Respect prefers-reduced-motion
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
+
     // Set colors based on theme
     const isDark = theme === 'dark';
     const bgBase = isDark ? "#0a0a0a" : "#f4f4f5";

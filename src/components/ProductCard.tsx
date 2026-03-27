@@ -2,6 +2,7 @@
 
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import { useStore } from "@/lib/store";
@@ -53,10 +54,13 @@ export default function ProductCard({ id, name, price, category, imageUrl, isNew
       {/* Image Area */}
       <Link href={`/shop/${id}`} className="relative aspect-[4/5] bg-foreground/5 overflow-hidden block">
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
-          style={{ backgroundImage: `url(${imageUrl})` }}
+
+        <Image
+          src={imageUrl}
+          alt={name}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
         
         {/* Quick Add Button */}

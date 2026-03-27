@@ -1,7 +1,5 @@
-"use client";
-
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import type { Product } from "./types";
 
 interface RelatedProductsProps {
@@ -9,8 +7,6 @@ interface RelatedProductsProps {
 }
 
 export default function RelatedProducts({ products }: RelatedProductsProps) {
-  const router = useRouter();
-
   if (products.length === 0) return null;
 
   return (
@@ -21,10 +17,10 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {products.map((p) => (
-          <div
+          <Link
             key={p.id}
-            onClick={() => router.push(`/shop/${p.id}`)}
-            className="cursor-pointer group relative bg-background/80 backdrop-blur-md border border-foreground/5 hover:border-volt/30 transition-colors"
+            href={`/shop/${p.id}`}
+            className="group relative bg-background/80 backdrop-blur-md border border-foreground/5 hover:border-volt/30 transition-colors"
           >
             <div className="relative aspect-square">
               <Image
@@ -46,7 +42,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                 ${(p.price / 100).toFixed(2)}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

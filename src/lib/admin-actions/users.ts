@@ -9,6 +9,17 @@ export async function updateUserRole(userId: string, role: string) {
 
   if (!["USER", "ADMIN"].includes(role)) throw new Error("Invalid role");
 
+  // Prevent demoting the last admin
+  if (role === "USER") {
+    const adminCount = await prisma.user.count({ where: { role: "ADMIN", isBanned: false } });
+    if (adminCount <= 1) {
+      const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+      if (targetUser?.role === "ADMIN") {
+        throw new Error("Cannot demote the last admin. Promote another user first.");
+      }
+    }
+  }
+
   await prisma.user.update({ where: { id: userId }, data: { role } });
   await logActivity(admin.id, "USER_ROLE_CHANGED", userId, `Role set to ${role}`);
   revalidatePath("/admin/users");
@@ -44,6 +55,14 @@ export async function toggleUserBan(userId: string) {
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new Error("User not found");
+
+  // Prevent banning the last active admin
+  if (!user.isBanned && user.role === "ADMIN") {
+    const activeAdminCount = await prisma.user.count({ where: { role: "ADMIN", isBanned: false } });
+    if (activeAdminCount <= 1) {
+      throw new Error("Cannot ban the last active admin.");
+    }
+  }
 
   await prisma.user.update({
     where: { id: userId },

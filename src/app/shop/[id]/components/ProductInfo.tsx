@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useStore } from "@/lib/store";
+import { useSession } from "next-auth/react";
 import { useToastStore } from "@/components/TerminalToast";
 import { Check, Share2 } from "lucide-react";
 import ProductSpecs from "./ProductSpecs";
@@ -14,7 +15,9 @@ interface ProductInfoProps {
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
-  const { addToCart, isLoggedIn, addPoints } = useStore();
+  const { addToCart } = useStore();
+  const { status } = useSession();
+  const isLoggedIn = status === "authenticated";
   const { addToast } = useToastStore();
 
   const [selectedSize, setSelectedSize] = useState<string>("M");
@@ -39,9 +42,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     addToast(`[LOADOUT_UPDATED]: ${product.name} appended.`, "success");
 
     if (isLoggedIn) {
-      addPoints(Math.floor(product.price));
+      const estimatedPoints = Math.floor(product.price / 100);
       addToast(
-        `[SYNDICATE_LINK]: +${Math.floor(product.price)} Volt Points verified.`,
+        `[SYNDICATE_LINK]: ~${estimatedPoints} Volt Points earned at checkout.`,
         "system"
       );
     }
@@ -52,15 +55,22 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
   const handleShare = async () => {
     const url = window.location.href;
-    if (navigator.share) {
-      await navigator.share({
-        title: product.name,
-        text: product.description,
-        url,
-      });
-    } else {
-      await navigator.clipboard.writeText(url);
-      addToast("[LINK_COPIED]: Asset URL copied to clipboard.", "success");
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: product.name,
+          text: product.description,
+          url,
+        });
+      } else {
+        await navigator.clipboard.writeText(url);
+        addToast("[LINK_COPIED]: Asset URL copied to clipboard.", "success");
+      }
+    } catch (error) {
+      // AbortError = user cancelled share sheet, ignore silently
+      if (error instanceof Error && error.name !== "AbortError") {
+        addToast("[SHARE_ERR]: Could not share. URL copied instead.", "alert");
+      }
     }
   };
 
@@ -131,10 +141,12 @@ export default function ProductInfo({ product }: ProductInfoProps) {
               Size Guide
             </button>
           </div>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-4" role="radiogroup" aria-label="Select size">
             {SIZES.map((size) => (
               <button
                 key={size}
+                role="radio"
+                aria-checked={selectedSize === size}
                 onClick={() => setSelectedSize(size)}
                 className={`py-4 font-mono text-sm border transition-all ${
                   selectedSize === size

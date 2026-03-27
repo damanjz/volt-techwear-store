@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import ProductClient from "./ProductClient";
 import Navbar from "@/components/Navbar";
@@ -5,13 +6,17 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
+const getProduct = cache(async (id: string) =>
+  prisma.product.findUnique({ where: { id } })
+);
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const product = await prisma.product.findUnique({ where: { id } });
+  const product = await getProduct(id);
 
   if (!product) {
     return { title: "Product Not Found" };
@@ -24,7 +29,7 @@ export async function generateMetadata({
       title: `${product.name} | VOLT`,
       description: product.description,
       images: [{ url: product.imageUrl }],
-      type: "website",
+      type: "article",
     },
   };
 }
@@ -84,7 +89,7 @@ export default async function ProductPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026") }}
       />
       <ProductClient
         product={JSON.parse(JSON.stringify(product))}

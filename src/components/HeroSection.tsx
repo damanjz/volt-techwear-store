@@ -2,19 +2,11 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useStore } from "@/lib/store";
+import { useSession } from "next-auth/react";
 
 export default function HeroSection() {
-  const router = useRouter();
-  const { isLoggedIn, login } = useStore();
-
-  const handleJoin = () => {
-    if (!isLoggedIn) {
-      login();
-    }
-    router.push("/profile");
-  };
+  const { status } = useSession();
+  const isLoggedIn = status === "authenticated";
 
   return (
     <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
@@ -42,12 +34,12 @@ export default function HeroSection() {
           >
             Shop the Drop <ArrowRight size={18} />
           </Link>
-          <button 
-            onClick={handleJoin}
+          <Link
+            href={isLoggedIn ? "/profile" : "/membership"}
             className="flex items-center justify-center gap-2 border border-foreground/20 bg-background/50 backdrop-blur-sm text-foreground font-mono font-bold uppercase tracking-widest px-8 py-4 hover:border-volt hover:text-volt transition-all"
           >
-            Join The Syndicate
-          </button>
+            {isLoggedIn ? "My Profile" : "Join The Syndicate"}
+          </Link>
         </div>
       </div>
     </section>

@@ -56,10 +56,11 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemP
               }
               className="p-2 text-foreground/70 hover:text-volt hover:bg-foreground/5 transition-colors disabled:opacity-30"
               disabled={item.quantity <= 1}
+              aria-label={`Decrease quantity of ${item.name}`}
             >
               <Minus size={14} />
             </button>
-            <span className="w-8 text-center font-mono text-sm">
+            <span className="w-8 text-center font-mono text-sm" aria-label={`Quantity: ${item.quantity}`}>
               {item.quantity}
             </span>
             <button
@@ -67,6 +68,7 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemP
                 onUpdateQuantity(item.id, item.quantity + 1, item.size)
               }
               className="p-2 text-foreground/70 hover:text-volt hover:bg-foreground/5 transition-colors"
+              aria-label={`Increase quantity of ${item.name}`}
             >
               <Plus size={14} />
             </button>

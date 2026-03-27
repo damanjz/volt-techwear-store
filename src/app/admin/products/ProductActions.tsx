@@ -4,19 +4,32 @@ import { toggleProductActive, deleteProduct } from "@/lib/admin-actions";
 import { Power, Trash2, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useToastStore } from "@/components/TerminalToast";
+import type { Product } from "@prisma/client";
 
-export default function ProductActions({ product }: { product: any }) {
+export default function ProductActions({ product }: { product: Pick<Product, "id" | "name" | "isActive"> }) {
   const router = useRouter();
+  const { addToast } = useToastStore();
 
   const handleToggle = async () => {
-    await toggleProductActive(product.id);
-    router.refresh();
+    try {
+      await toggleProductActive(product.id);
+      router.refresh();
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Failed to toggle product";
+      addToast(`[ADMIN_ERR]: ${msg}`, "alert");
+    }
   };
 
   const handleDelete = async () => {
     if (!confirm(`Delete "${product.name}"? This cannot be undone.`)) return;
-    await deleteProduct(product.id);
-    router.refresh();
+    try {
+      await deleteProduct(product.id);
+      router.refresh();
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Failed to delete product";
+      addToast(`[ADMIN_ERR]: ${msg}`, "alert");
+    }
   };
 
   return (

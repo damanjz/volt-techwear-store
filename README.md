@@ -67,7 +67,9 @@ Following a deep architectural review, VOLT represents tier-one e-commerce stand
 - **Atomic Concurrency:** High-concurrency cart processing, inventory tracking, and valid coupon redemptions process asynchronously within isolated Prisma `$transaction` boundaries.
 - **DDoS/Brute Force Mitigation:** Global application and API ingestion is organically rate-limited via Upstash Redis edge capabilities.
 - **Server Authority:** Operator clearance levels, sessions, and multi-tier authentication strictly re-fetch securely server-side per network request, preventing token spoofing intercepting.
-- **Next.js 14 Rigor:** Complete CSP header implementation cross-app, structured `error.tsx` Catch-all route bounds, decoupled viewport meta-protocols, layout responsiveness (`sizes`), and dedicated SEO crawlers mappings.
+- **Next.js 15 Rigor:** Complete CSP header implementation, structured `error.tsx` Catch-all route bounds, decoupled viewport meta-protocols, layout responsiveness (`sizes`), and dedicated SEO crawlers mappings.
+- **RSC & Caching:** Leverages React 19 `cache()` for DB call deduplication and utilizes pure Server Components for static asset rendering to minimize client-side bundle weight.
+- **A11y Engineering:** Rigorous ARIA-compliant overlays (Cart/Navigation) with full keyboard (Escape key) support and semantic radiogroup interactions.
 
 ---
 

@@ -23,7 +23,7 @@ export default async function BlackSitePage() {
   // Only fetch products if user has Tier 3 clearance
   const products = hasClearance
     ? await prisma.product.findMany({
-        where: { id: { startsWith: "bs-" } },
+        where: { isClassified: true, isActive: true },
       })
     : [];
 
