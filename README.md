@@ -61,6 +61,14 @@
 - `robots.ts` disallows `/admin/`, `/api/`, `/profile`, `/black-site/`
 - Dynamic `sitemap.ts` includes only active, non-classified products
 
+### 🔒 Audit Compliance & Hardening
+Following a deep architectural review, VOLT represents tier-one e-commerce standards:
+- **Financial Precision:** All financial datasets rigorously process deterministic integer cents scaling (`$12.50` -> `1250`) eradicating floating-point arithmetic vulnerabilities.
+- **Atomic Concurrency:** High-concurrency cart processing, inventory tracking, and valid coupon redemptions process asynchronously within isolated Prisma `$transaction` boundaries.
+- **DDoS/Brute Force Mitigation:** Global application and API ingestion is organically rate-limited via Upstash Redis edge capabilities.
+- **Server Authority:** Operator clearance levels, sessions, and multi-tier authentication strictly re-fetch securely server-side per network request, preventing token spoofing intercepting.
+- **Next.js 14 Rigor:** Complete CSP header implementation cross-app, structured `error.tsx` Catch-all route bounds, decoupled viewport meta-protocols, layout responsiveness (`sizes`), and dedicated SEO crawlers mappings.
+
 ---
 
 ## 🛡️ ADMIN CONTROL SYSTEM (`/admin`)
@@ -160,7 +168,7 @@ volt-techwear-store/
 │   ├── middleware.ts           # Route protection + security headers
 │   └── types/next-auth.d.ts    # Extended session types (role, voltPoints)
 ├── next.config.mjs             # Image domains + security headers
-└── package.json                # Build: db-toggle → db push → generate → next build
+└── package.json                # Production build utilizes structured migrate deploy
 ```
 
 ---
@@ -177,7 +185,8 @@ volt-techwear-store/
    ```bash
    npm install
    npm run db:dev          # Switch to SQLite for local dev
-   npx prisma db push      # Create local database
+   npx prisma migrate dev  # Execute schema migrations locally
+   npx prisma generate     # Rebuild the local types
    ```
 
 3. **Environment (`.env`):**
@@ -193,7 +202,7 @@ volt-techwear-store/
    ```
 
 5. **Seed data (dev only):**
-   Visit `http://localhost:3000/api/debug/seed` to populate products, admin user, coupons, and default configs.
+   Send a POST request to `/api/debug/seed` sending the internal `SEED_SECRET` to securely populate mock products, admin users, and configurations.
 
 6. **Admin access:**
    Login as `admin@volt.sys` / `admin123` → navigate to `/admin`
