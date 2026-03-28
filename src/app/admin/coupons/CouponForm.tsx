@@ -63,7 +63,6 @@ export default function CouponForm() {
           <select name="scope" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 font-mono text-sm text-white focus:border-volt focus:outline-none">
             <option value="SITE">Site-wide</option>
             <option value="CATEGORY">Category</option>
-            <option value="PRODUCT">Product</option>
           </select>
         </div>
         <div>

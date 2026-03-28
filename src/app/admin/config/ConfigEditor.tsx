@@ -15,8 +15,6 @@ const PRESET_KEYS = [
   { key: "feature.blacksite", description: "Enable Black Site vault", defaultValue: "true" },
   { key: "feature.banner.active", description: "Show promotional banner", defaultValue: "false" },
   { key: "feature.banner.text", description: "Banner message text", defaultValue: "" },
-  { key: "feature.banner.color", description: "Banner background color", defaultValue: "#d4ff33" },
-  { key: "store.pricing.multiplier", description: "Global price multiplier", defaultValue: "1.0" },
 ];
 
 export default function ConfigEditor({ configs }: { configs: Config[] }) {
