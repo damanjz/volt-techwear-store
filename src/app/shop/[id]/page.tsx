@@ -41,9 +41,7 @@ export default async function ProductPage({
 }) {
   const { id } = await params;
 
-  const product = await prisma.product.findUnique({
-    where: { id },
-  });
+  const product = await getProduct(id);
 
   if (!product) {
     return (

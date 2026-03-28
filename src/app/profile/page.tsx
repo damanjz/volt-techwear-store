@@ -27,7 +27,8 @@ export default async function ProfilePage() {
     },
     orderBy: {
       createdAt: 'desc'
-    }
+    },
+    take: 20,
   });
 
   return <ProfileClient initialOrders={orders} />;

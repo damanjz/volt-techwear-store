@@ -24,6 +24,15 @@ export default async function Shop() {
       category: { not: "Merch" },
     },
     orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      imageUrl: true,
+      category: true,
+      isNew: true,
+      tags: true,
+    },
   });
 
   return (
