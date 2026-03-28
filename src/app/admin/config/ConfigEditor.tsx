@@ -31,8 +31,8 @@ export default function ConfigEditor({ configs }: { configs: Config[] }) {
     try {
       await upsertConfig(key, entries[key] ?? "");
       router.refresh();
-    } catch {
-      alert("Failed to save");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to save");
     } finally {
       setSaving(null);
     }
@@ -47,8 +47,8 @@ export default function ConfigEditor({ configs }: { configs: Config[] }) {
       setNewKey("");
       setNewValue("");
       router.refresh();
-    } catch {
-      alert("Failed to create");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to create");
     } finally {
       setSaving(null);
     }
@@ -61,8 +61,8 @@ export default function ConfigEditor({ configs }: { configs: Config[] }) {
       await upsertConfig(key, defaultValue);
       setEntries({ ...entries, [key]: defaultValue });
       router.refresh();
-    } catch {
-      alert("Failed to create");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to create");
     } finally {
       setSaving(null);
     }

@@ -40,8 +40,8 @@ export default async function ThemeLoader() {
         themeVars[cssVar] = cssValue;
       }
     }
-  } catch {
-    // If DB is unavailable, fall back to defaults
+  } catch (err) {
+    console.error("ThemeLoader: DB unavailable, using defaults", err);
   }
 
   if (Object.keys(themeVars).length === 0) return null;

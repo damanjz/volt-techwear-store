@@ -69,7 +69,7 @@ export const authOptions: NextAuthOptions = {
 
         // Check if email is verified
         if (!user.emailVerified) {
-          throw new Error("Email not verified. Check server console for verification link.");
+          throw new Error("Email not verified. Please check your email for a verification link.");
         }
 
         // Check if user is banned

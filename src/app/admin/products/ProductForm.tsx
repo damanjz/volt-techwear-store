@@ -25,8 +25,8 @@ export default function ProductForm({ product }: { product?: Product }) {
       }
       router.push("/admin/products");
       router.refresh();
-    } catch {
-      alert("Failed to save product");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to save product");
     } finally {
       setSaving(false);
     }

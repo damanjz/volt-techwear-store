@@ -18,8 +18,8 @@ export default function CouponForm() {
       await createCoupon(formData);
       setOpen(false);
       router.refresh();
-    } catch {
-      alert("Failed to create coupon");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to create coupon");
     } finally {
       setSaving(false);
     }

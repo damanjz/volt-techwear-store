@@ -14,7 +14,11 @@ export async function requireAdmin() {
 }
 
 export async function logActivity(userId: string, action: string, target: string = "", details: string = "") {
-  await prisma.activityLog.create({
-    data: { userId, action, target, details },
-  });
+  try {
+    await prisma.activityLog.create({
+      data: { userId, action, target, details },
+    });
+  } catch (err) {
+    console.error("Failed to log activity:", err);
+  }
 }
