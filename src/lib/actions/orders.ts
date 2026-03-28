@@ -49,7 +49,19 @@ export async function createOrder(cartItems: CartItemInput[], total: number, cou
       let appliedCoupon: string | null = null;
 
       if (sanitizedCoupon) {
-        const couponResult = await internalValidateCoupon(sanitizedCoupon, serverTotal, tx);
+        const couponResult = await internalValidateCoupon(
+          sanitizedCoupon,
+          serverTotal,
+          tx,
+          cartItems.map((item) => {
+            const dbProduct = productMap.get(item.id);
+            return {
+              category: dbProduct?.category ?? "",
+              price: dbProduct?.price ?? 0,
+              quantity: item.quantity,
+            };
+          })
+        );
         if (couponResult.valid && couponResult.discount) {
           discount = couponResult.discount;
           appliedCoupon = couponResult.code || null;

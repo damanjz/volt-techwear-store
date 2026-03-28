@@ -62,6 +62,8 @@ export default async function ProductPage({
     where: {
       category: product.category,
       id: { not: product.id },
+      isActive: true,
+      isClassified: false,
     },
     take: 4,
   });

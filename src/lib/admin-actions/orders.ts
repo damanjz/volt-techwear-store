@@ -77,7 +77,12 @@ export async function toggleCouponActive(id: string) {
   return { success: true };
 }
 
-export async function internalValidateCoupon(code: string, cartTotal: number, tx: Prisma.TransactionClient | typeof prisma) {
+export async function internalValidateCoupon(
+  code: string,
+  cartTotal: number,
+  tx: Prisma.TransactionClient | typeof prisma,
+  cartItems?: Array<{ category: string; price: number; quantity: number }>
+) {
   const coupon = await tx.coupon.findUnique({
     where: { code: code.toUpperCase() },
   });
@@ -87,13 +92,20 @@ export async function internalValidateCoupon(code: string, cartTotal: number, tx
   if (coupon.expiresAt && coupon.expiresAt < new Date()) return { valid: false, error: "Coupon expired" };
   if (coupon.usageLimit > 0 && coupon.usedCount >= coupon.usageLimit) return { valid: false, error: "Coupon usage limit reached" };
 
+  let applicableTotal = cartTotal;
+
+  // For CATEGORY-scoped coupons, only apply to matching items
+  if (coupon.scope === "CATEGORY" && coupon.category && cartItems) {
+    applicableTotal = cartItems
+      .filter((item) => item.category === coupon.category)
+      .reduce((sum, item) => sum + item.price * item.quantity, 0);
+  }
+
   let discount = 0;
   if (coupon.discountType === "PERCENT") {
-    // value is an integer percentage (e.g. 20 for 20%), total in cents
-    discount = Math.floor((cartTotal * coupon.value) / 100);
+    discount = Math.floor((applicableTotal * coupon.value) / 100);
   } else {
-    // value is in cents, discount cannot exceed cartTotal
-    discount = Math.min(coupon.value, cartTotal);
+    discount = Math.min(coupon.value, applicableTotal);
   }
 
   return {
