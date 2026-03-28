@@ -62,15 +62,17 @@ export async function deleteCoupon(id: string) {
 export async function toggleCouponActive(id: string) {
   const admin = await requireAdmin();
 
-  const coupon = await prisma.coupon.findUnique({ where: { id } });
-  if (!coupon) throw new Error("Coupon not found");
-
-  await prisma.coupon.update({
-    where: { id },
-    data: { isActive: !coupon.isActive },
+  const result = await prisma.$transaction(async (tx) => {
+    const coupon = await tx.coupon.findUnique({ where: { id } });
+    if (!coupon) throw new Error("Coupon not found");
+    const updated = await tx.coupon.update({
+      where: { id },
+      data: { isActive: !coupon.isActive },
+    });
+    return updated;
   });
 
-  await logActivity(admin.id, coupon.isActive ? "COUPON_DEACTIVATED" : "COUPON_ACTIVATED", id, coupon.code);
+  await logActivity(admin.id, result.isActive ? "COUPON_ACTIVATED" : "COUPON_DEACTIVATED", id, result.code);
   revalidatePath("/admin/coupons");
   return { success: true };
 }

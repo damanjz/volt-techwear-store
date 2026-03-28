@@ -89,18 +89,20 @@ export async function deleteProduct(id: string) {
 export async function toggleProductActive(id: string) {
   const admin = await requireAdmin();
 
-  const product = await prisma.product.findUnique({ where: { id } });
-  if (!product) throw new Error("Product not found");
-
-  await prisma.product.update({
-    where: { id },
-    data: { isActive: !product.isActive },
+  const result = await prisma.$transaction(async (tx) => {
+    const product = await tx.product.findUnique({ where: { id } });
+    if (!product) throw new Error("Product not found");
+    const updated = await tx.product.update({
+      where: { id },
+      data: { isActive: !product.isActive },
+    });
+    return updated;
   });
 
-  await logActivity(admin.id, product.isActive ? "PRODUCT_DEACTIVATED" : "PRODUCT_ACTIVATED", id, product.name);
+  await logActivity(admin.id, result.isActive ? "PRODUCT_ACTIVATED" : "PRODUCT_DEACTIVATED", id, result.name);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
-  return { success: true, isActive: !product.isActive };
+  return { success: true, isActive: result.isActive };
 }
 
 export async function bulkUpdateProducts(ids: string[], action: "activate" | "deactivate" | "delete") {
