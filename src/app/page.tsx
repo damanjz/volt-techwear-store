@@ -4,8 +4,23 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
 import { ArrowRight, Shield } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const newArrivals = await prisma.product.findMany({
+    where: { isNew: true, isActive: true, isClassified: false },
+    take: 3,
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      imageUrl: true,
+      category: true,
+      isNew: true,
+      tags: true,
+    },
+  });
   return (
     <main className="min-h-screen bg-transparent">
       <Navbar />
@@ -28,30 +43,9 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Mock Products injected here via ProductCard component mapping */}
-          <ProductCard 
-            id="tx-01"
-            name="Aegis Utility Jacket // V2" 
-            price={345.00} 
-            category="Outerwear" 
-            imageUrl="/products/tx-01.png"
-            isNew={true}
-          />
-          <ProductCard 
-            id="px-04"
-            name="Carbon Parachute Cargo" 
-            price={185.00} 
-            category="Bottoms" 
-            imageUrl="/products/px-04.png"
-            isNew={true}
-          />
-          <ProductCard 
-            id="hx-02"
-            name="Volt Schematic Hoodie" 
-            price={120.00} 
-            category="Tops" 
-            imageUrl="/products/hx-02.png"
-          />
+          {newArrivals.map((product) => (
+            <ProductCard key={product.id} {...product} />
+          ))}
         </div>
       </section>
 

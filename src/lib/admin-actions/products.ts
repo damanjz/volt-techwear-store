@@ -108,6 +108,9 @@ export async function toggleProductActive(id: string) {
 export async function bulkUpdateProducts(ids: string[], action: "activate" | "deactivate" | "delete") {
   const admin = await requireAdmin();
 
+  if (ids.length === 0) throw new Error("No products selected.");
+  if (ids.length > 500) throw new Error("Cannot update more than 500 products at once.");
+
   if (action === "delete") {
     await prisma.product.deleteMany({ where: { id: { in: ids } } });
     await logActivity(admin.id, "PRODUCTS_BULK_DELETED", ids.join(","), `${ids.length} products`);

@@ -19,7 +19,8 @@ export const revalidate = 60;
 export default async function Merch() {
   const merchProducts = await prisma.product.findMany({
     where: {
-      category: "Merch"
+      category: "Merch",
+      isActive: true,
     }
   });
 
