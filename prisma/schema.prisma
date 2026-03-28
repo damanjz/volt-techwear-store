@@ -61,7 +61,7 @@ model User {
   // Syndicate Identity
   voltPoints     Int       @default(0)
   clearanceLevel Int       @default(1)
-  role           String    @default("USER")   // USER | ADMIN
+  role           String    @default("USER")   /// USER | ADMIN — should be Postgres enum on migration
   isBanned       Boolean   @default(false)
 
   accounts       Account[]
@@ -98,7 +98,7 @@ model Order {
   total        Int      // Cents
   discount     Int      @default(0) // Cents
   couponCode   String?
-  status       String   @default("PENDING")
+  status       String   @default("PENDING")   /// PENDING | PAID — should be Postgres enum on migration
   createdAt    DateTime @default(now())
   items        OrderItem[]
 
@@ -111,9 +111,9 @@ model OrderItem {
   order     Order   @relation(fields: [orderId], references: [id])
   productId String
   product   Product @relation(fields: [productId], references: [id])
-  name      String
+  name      String  /// Snapshot at purchase time — not a live reference
   quantity  Int
-  price     Int     // Cents
+  price     Int     /// Snapshot at purchase time in cents — not a live reference
 
   @@index([orderId])
   @@index([productId])

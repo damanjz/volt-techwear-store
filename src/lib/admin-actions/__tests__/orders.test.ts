@@ -26,6 +26,14 @@ vi.mock("../../prisma", () => ({
   },
 }));
 
+vi.mock("next-auth", () => ({
+  getServerSession: vi.fn().mockResolvedValue({ user: { id: "admin1id" } }),
+}));
+
+vi.mock("@/lib/auth", () => ({
+  authOptions: {},
+}));
+
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));

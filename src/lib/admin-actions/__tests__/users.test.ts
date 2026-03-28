@@ -11,14 +11,21 @@ vi.mock("../helpers", () => ({
   logActivity: vi.fn(),
 }));
 
-vi.mock("../../prisma", () => ({
-  prisma: {
-    user: {
-      update: vi.fn(),
-      findUnique: vi.fn(),
+vi.mock("../../prisma", () => {
+  const userMethods = {
+    update: vi.fn(),
+    findUnique: vi.fn(),
+    count: vi.fn(),
+  };
+  return {
+    prisma: {
+      user: userMethods,
+      $transaction: vi.fn().mockImplementation(async (cb: (tx: Record<string, unknown>) => Promise<unknown>) =>
+        cb({ user: userMethods })
+      ),
     },
-  },
-}));
+  };
+});
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),

@@ -12,6 +12,7 @@
     "postinstall": "prisma generate",
     "db:dev": "node scripts/db-toggle.mjs dev && npx prisma generate",
     "db:prod": "node scripts/db-toggle.mjs prod && npx prisma generate",
+    "typecheck": "tsc --noEmit",
     "build": "node scripts/db-toggle.mjs prod && npx prisma db push --accept-data-loss && npx prisma generate && next build"
   },
   "prisma": {

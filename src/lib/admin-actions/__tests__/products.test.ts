@@ -11,18 +11,24 @@ vi.mock("../helpers", () => ({
   logActivity: vi.fn(),
 }));
 
-vi.mock("../../prisma", () => ({
-  prisma: {
-    product: {
-      create: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-      findUnique: vi.fn(),
-      deleteMany: vi.fn(),
-      updateMany: vi.fn(),
+vi.mock("../../prisma", () => {
+  const productMethods = {
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    findUnique: vi.fn(),
+    deleteMany: vi.fn(),
+    updateMany: vi.fn(),
+  };
+  return {
+    prisma: {
+      product: productMethods,
+      $transaction: vi.fn().mockImplementation(async (cb: (tx: Record<string, unknown>) => Promise<unknown>) =>
+        cb({ product: productMethods })
+      ),
     },
-  },
-}));
+  };
+});
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
@@ -91,7 +97,7 @@ describe("Admin Products Actions", () => {
 
     it("toggles product active status", async () => {
       vi.mocked(prisma.product.findUnique).mockResolvedValueOnce({ id: "p1", name: "P1", isActive: true } as Product);
-      vi.mocked(prisma.product.update).mockResolvedValueOnce({} as Product);
+      vi.mocked(prisma.product.update).mockResolvedValueOnce({ id: "p1", name: "P1", isActive: false } as Product);
 
       const result = await toggleProductActive("p1");
 

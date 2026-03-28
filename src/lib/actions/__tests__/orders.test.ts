@@ -122,7 +122,9 @@ describe("Actions - Orders", () => {
 
       const result = await createOrder(cartItems, 100, "SAVE20");
 
-      expect(internalValidateCoupon).toHaveBeenCalledWith("SAVE20", 100, mockTx);
+      expect(internalValidateCoupon).toHaveBeenCalledWith("SAVE20", 100, mockTx, [
+        { category: "", price: 50, quantity: 2 },
+      ]);
       
       expect(mockTx.order.create).toHaveBeenCalledWith(expect.objectContaining({
         data: expect.objectContaining({
