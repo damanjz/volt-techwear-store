@@ -7,6 +7,7 @@ import { useSession, signIn } from "next-auth/react";
 import ProfileHeader from "./components/ProfileHeader";
 import OrderHistory from "./components/OrderHistory";
 import type { Order, OrderItem } from "@prisma/client";
+import { CLEARANCE_TIERS } from "@/lib/actions/constants";
 
 interface ProfileClientProps {
   initialOrders: (Order & { items: OrderItem[] })[];
@@ -49,7 +50,8 @@ export default function ProfileClient({ initialOrders }: ProfileClientProps) {
     );
   }
 
-  const nextTierPoints = clearanceLevel === 1 ? 500 : clearanceLevel === 2 ? 2000 : 5000;
+  const nextTier = CLEARANCE_TIERS.find((t) => t.level === clearanceLevel + 1);
+  const nextTierPoints = nextTier?.cost ?? 0;
   const progressPercent = Math.min(100, Math.max(0, (voltPoints / nextTierPoints) * 100));
 
   return (

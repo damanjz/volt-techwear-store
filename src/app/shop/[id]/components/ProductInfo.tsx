@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useToastStore } from "@/components/TerminalToast";
 import { Check, Share2 } from "lucide-react";
 import ProductSpecs from "./ProductSpecs";
+import { VOLT_POINTS_RATE } from "@/lib/actions/constants";
 import type { Product } from "./types";
 
 const SIZES = ["S", "M", "L", "XL"];
@@ -42,7 +43,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     addToast(`[LOADOUT_UPDATED]: ${product.name} appended.`, "success");
 
     if (isLoggedIn) {
-      const estimatedPoints = Math.floor(product.price / 100);
+      const estimatedPoints = Math.floor(product.price * VOLT_POINTS_RATE);
       addToast(
         `[SYNDICATE_LINK]: ~${estimatedPoints} Volt Points earned at checkout.`,
         "system"
@@ -187,7 +188,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       {/* Volt Points Notice */}
       {isLoggedIn && !isOutOfStock && (
         <div className="mt-4 text-center font-mono text-[10px] uppercase tracking-widest text-cyber-red/80">
-          + {Math.floor(product.price)} VOLT POINTS UPON ACQUISITION
+          + {Math.floor(product.price * VOLT_POINTS_RATE).toLocaleString()} VOLT POINTS UPON ACQUISITION
         </div>
       )}
     </div>
