@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useStore } from "@/lib/store";
 import { useSession } from "next-auth/react";
 import { useToastStore } from "@/components/TerminalToast";
@@ -23,6 +23,11 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
   const [selectedSize, setSelectedSize] = useState<string>("M");
   const [isAdded, setIsAdded] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    return () => clearTimeout(timerRef.current);
+  }, []);
 
   const isOutOfStock = product.stock === 0;
   const isLowStock = product.stock > 0 && product.stock <= 10;
@@ -51,7 +56,8 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     }
 
     setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setIsAdded(false), 2000);
   };
 
   const handleShare = async () => {

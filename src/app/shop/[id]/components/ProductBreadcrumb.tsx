@@ -1,7 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 
 interface ProductBreadcrumbProps {
@@ -13,8 +10,6 @@ export default function ProductBreadcrumb({
   category,
   productName,
 }: ProductBreadcrumbProps) {
-  const router = useRouter();
-
   return (
     <>
       <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground/40 mb-8">
@@ -29,12 +24,12 @@ export default function ProductBreadcrumb({
         </span>
       </div>
 
-      <button
-        onClick={() => router.back()}
+      <Link
+        href="/shop"
         className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground/50 hover:text-volt transition-colors mb-8"
       >
         <ArrowLeft size={16} /> Back to Archive
-      </button>
+      </Link>
     </>
   );
 }

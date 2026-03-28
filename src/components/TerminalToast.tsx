@@ -16,18 +16,28 @@ interface ToastStore {
   removeToast: (id: string) => void;
 }
 
+const toastTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
 export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
   addToast: (message, type = "system") => {
     const id = crypto.randomUUID();
     set((state) => ({ toasts: [...state.toasts, { id, message, type }] }));
-    
-    // Auto remove after 4 seconds
-    setTimeout(() => {
+
+    const timer = setTimeout(() => {
+      toastTimers.delete(id);
       set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }));
     }, 4000);
+    toastTimers.set(id, timer);
   },
-  removeToast: (id) => set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
+  removeToast: (id) => {
+    const timer = toastTimers.get(id);
+    if (timer) {
+      clearTimeout(timer);
+      toastTimers.delete(id);
+    }
+    set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }));
+  },
 }));
 
 export default function TerminalToasts() {
