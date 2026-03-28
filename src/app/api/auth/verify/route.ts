@@ -11,35 +11,33 @@ export async function GET(req: Request) {
       return new NextResponse("Invalid verification link", { status: 400 });
     }
 
-    const vt = await prisma.verificationToken.findFirst({
-      where: { identifier: email, token }
-    });
-
-    if (!vt) {
-      return new NextResponse("Verification link is invalid or has already been used.", { status: 400 });
-    }
-
-    if (vt.expires < new Date()) {
-      await prisma.verificationToken.delete({
-        where: { identifier_token: { identifier: email, token } }
+    await prisma.$transaction(async (tx) => {
+      const deleted = await tx.verificationToken.deleteMany({
+        where: {
+          identifier: email,
+          token,
+          expires: { gt: new Date() },
+        },
       });
-      return new NextResponse("Verification link expired. Please register again.", { status: 400 });
-    }
 
-    // Mark user as verified
-    await prisma.user.update({
-      where: { email },
-      data: { emailVerified: new Date() }
+      if (deleted.count === 0) {
+        throw new Error("INVALID_OR_EXPIRED");
+      }
+
+      await tx.user.update({
+        where: { email },
+        data: { emailVerified: new Date() },
+      });
     });
 
-    // Delete token
-    await prisma.verificationToken.delete({
-      where: { identifier_token: { identifier: email, token } }
-    });
-
-    // Redirect to login page with success flag
     return NextResponse.redirect(new URL("/membership?verified=1", req.url));
   } catch (err) {
+    if (err instanceof Error && err.message === "INVALID_OR_EXPIRED") {
+      return new NextResponse(
+        "Verification link is invalid, expired, or has already been used.",
+        { status: 400 }
+      );
+    }
     console.error("Verification error:", err);
     return new NextResponse("Internal server error", { status: 500 });
   }
