@@ -48,6 +48,7 @@ export default function BlackSiteProducts({ products }: BlackSiteProductsProps) 
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <button
+                aria-label={`Add ${item.name} to cart`}
                 className="absolute bottom-6 left-1/2 -translate-x-1/2 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 z-20 font-mono font-bold text-xs uppercase px-8 py-4 bg-volt text-background tracking-widest transition-all shadow-[0_0_15px_rgba(212,255,51,0.4)] whitespace-nowrap hover:bg-[#b0d925]"
                 onClick={() => {
                   addToCart({

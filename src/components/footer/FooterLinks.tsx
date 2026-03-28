@@ -30,7 +30,7 @@ function LinkColumn({ title, links }: LinkColumnProps) {
       <h4 className="font-mono text-xs uppercase tracking-widest text-foreground/40 mb-6">
         {title}
       </h4>
-      <ul className="space-y-3">
+      <ul role="list" className="space-y-3">
         {links.map((link) => (
           <li key={link.href}>
             <Link

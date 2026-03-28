@@ -16,7 +16,7 @@ const navLinks = [
 ] as const;
 
 export default function Navbar() {
-  const { toggleCart, getCartCount, theme, toggleTheme } = useStore();
+  const { toggleCart, getCartCount, theme, toggleTheme, isCartOpen } = useStore();
   const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -63,6 +63,8 @@ export default function Navbar() {
             theme={theme}
             cartCount={mounted ? getCartCount() : 0}
             voltPoints={voltPoints}
+            isCartOpen={isCartOpen}
+            isMobileMenuOpen={isMobileMenuOpen}
             toggleTheme={toggleTheme}
             toggleCart={toggleCart}
             onOpenMobileMenu={() => setIsMobileMenuOpen(true)}

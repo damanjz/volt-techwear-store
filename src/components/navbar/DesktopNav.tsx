@@ -24,6 +24,8 @@ interface DesktopNavProps {
   theme: string;
   cartCount: number;
   voltPoints?: number;
+  isCartOpen: boolean;
+  isMobileMenuOpen: boolean;
   toggleTheme: () => void;
   toggleCart: () => void;
   onOpenMobileMenu: () => void;
@@ -37,6 +39,8 @@ export default function DesktopNav({
   theme,
   cartCount,
   voltPoints,
+  isCartOpen,
+  isMobileMenuOpen,
   toggleTheme,
   toggleCart,
   onOpenMobileMenu,
@@ -105,6 +109,7 @@ export default function DesktopNav({
         <button
           className="hover:text-volt transition-colors relative"
           aria-label="Cart"
+          aria-expanded={isCartOpen}
           onClick={toggleCart}
         >
           <ShoppingCart size={20} />
@@ -117,6 +122,7 @@ export default function DesktopNav({
         <button
           className="md:hidden hover:text-volt transition-colors"
           aria-label="Menu"
+          aria-expanded={isMobileMenuOpen}
           onClick={onOpenMobileMenu}
         >
           <Menu size={24} />

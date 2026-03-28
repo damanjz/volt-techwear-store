@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ShoppingBag } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface ProductProps {
   id: string;
@@ -19,9 +19,15 @@ interface ProductProps {
 export default function ProductCard({ id, name, price, category, imageUrl, isNew }: ProductProps) {
   const { addToCart } = useStore();
   const [added, setAdded] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    return () => clearTimeout(timerRef.current);
+  }, []);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     addToCart({
       id,
       name,
@@ -29,15 +35,15 @@ export default function ProductCard({ id, name, price, category, imageUrl, isNew
       category,
       imageUrl,
       quantity: 1,
-      size: "M" // Default mock size for quick add
+      size: "M",
     });
     setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setAdded(false), 2000);
   };
 
   return (
-    <div className="group relative flex flex-col bg-background/80 backdrop-blur-md overflow-hidden border border-foreground/5 hover:border-volt/30 transition-all duration-200 hover:-translate-y-1"
-    >
+    <div className="group relative flex flex-col bg-background/80 backdrop-blur-md overflow-hidden border border-foreground/5 hover:border-volt/30 transition-all duration-200 hover:-translate-y-1">
       {/* Badges */}
       <div className="absolute top-4 left-4 z-10 flex gap-2">
         {isNew && (
@@ -46,11 +52,10 @@ export default function ProductCard({ id, name, price, category, imageUrl, isNew
           </div>
         )}
       </div>
-      
+
       {/* Image Area */}
       <Link href={`/shop/${id}`} className="relative aspect-[4/5] bg-foreground/5 overflow-hidden block">
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
         <Image
           src={imageUrl}
           alt={name}
@@ -58,15 +63,16 @@ export default function ProductCard({ id, name, price, category, imageUrl, isNew
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
-        
-        {/* Quick Add Button */}
-        <button 
-          onClick={handleQuickAdd}
-          className={`absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 z-20 flex items-center gap-2 font-mono font-bold text-xs uppercase px-6 py-3 tracking-widest transition-all duration-300 whitespace-nowrap ${added ? 'bg-volt text-background' : 'bg-foreground text-background hover:bg-volt'}`}
-        >
-          <ShoppingBag size={14} /> {added ? "ADDED" : "Quick Add"}
-        </button>
       </Link>
+
+      {/* Quick Add Button — sibling of Link, not child */}
+      <button
+        onClick={handleQuickAdd}
+        aria-label={`Add ${name} to cart`}
+        className={`absolute bottom-[calc(4rem+1rem)] left-1/2 -translate-x-1/2 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 z-20 flex items-center gap-2 font-mono font-bold text-xs uppercase px-6 py-3 tracking-widest transition-all duration-300 whitespace-nowrap ${added ? 'bg-volt text-background' : 'bg-foreground text-background hover:bg-volt'}`}
+      >
+        <ShoppingBag size={14} /> {added ? "ADDED" : "Quick Add"}
+      </button>
 
       {/* Info Area */}
       <div className="p-4 flex flex-col gap-2 relative z-10 bg-background transition-colors duration-500">
