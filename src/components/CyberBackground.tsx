@@ -88,7 +88,12 @@ export default function CyberBackground() {
 
     // Initial sizing
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    let resizeTimeout: ReturnType<typeof setTimeout>;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resizeCanvas, 200);
+    };
+    window.addEventListener("resize", handleResize);
 
     const render = () => {
       ctx.fillStyle = bgBase;
@@ -128,7 +133,8 @@ export default function CyberBackground() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimeout);
     };
   }, [theme]);
 

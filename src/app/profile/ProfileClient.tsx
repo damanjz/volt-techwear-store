@@ -2,7 +2,6 @@
 
 import Navbar from "@/components/Navbar";
 import { ShieldAlert, Award } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import ProfileHeader from "./components/ProfileHeader";
 import OrderHistory from "./components/OrderHistory";
@@ -15,17 +14,9 @@ interface ProfileClientProps {
 
 export default function ProfileClient({ initialOrders }: ProfileClientProps) {
   const { data: session, status } = useSession();
-  const [mounted, setMounted] = useState(false);
-
   const isLoggedIn = status === "authenticated";
   const voltPoints = session?.user?.voltPoints || 0;
   const clearanceLevel = session?.user?.clearanceLevel || 1;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
 
   if (!isLoggedIn) {
     return (

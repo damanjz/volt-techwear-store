@@ -88,3 +88,21 @@ export const useStore = create<StoreState>()(
     }
   )
 );
+
+// Selector hooks — prevent unnecessary re-renders
+export const useCartStore = () => useStore((state) => ({
+  cart: state.cart,
+  isCartOpen: state.isCartOpen,
+  addToCart: state.addToCart,
+  removeFromCart: state.removeFromCart,
+  updateQuantity: state.updateQuantity,
+  toggleCart: state.toggleCart,
+  clearCart: state.clearCart,
+  getCartTotal: state.getCartTotal,
+  getCartCount: state.getCartCount,
+}));
+
+export const useThemeStore = () => useStore((state) => ({
+  theme: state.theme,
+  toggleTheme: state.toggleTheme,
+}));
