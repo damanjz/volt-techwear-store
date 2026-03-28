@@ -86,6 +86,9 @@ model Product {
 
   orderItems   OrderItem[]
   coupons      CouponProduct[]
+
+  @@index([isActive, isClassified, category])
+  @@index([category])
 }
 
 model Order {
