@@ -1,4 +1,16 @@
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
+
+const getCachedTheme = unstable_cache(
+  async () => {
+    const configs = await prisma.siteConfig.findMany({
+      where: { key: { startsWith: "theme." } },
+    });
+    return configs;
+  },
+  ["theme-config"],
+  { revalidate: 300 }
+);
 
 // Strict CSS value validation to prevent CSS injection
 const CSS_COLOR_REGEX = /^(#[0-9a-fA-F]{3,8}|rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)|rgba\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*[\d.]+\s*\)|[a-zA-Z]{1,30})$/;
@@ -19,9 +31,7 @@ export default async function ThemeLoader() {
   const themeVars: Record<string, string> = {};
 
   try {
-    const configs = await prisma.siteConfig.findMany({
-      where: { key: { startsWith: "theme." } },
-    });
+    const configs = await getCachedTheme();
 
     for (const config of configs) {
       const cssVar = sanitizeCssVar(config.key.replace("theme.", "--"));

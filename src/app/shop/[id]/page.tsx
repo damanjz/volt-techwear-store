@@ -4,7 +4,7 @@ import ProductClient from "./ProductClient";
 import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const getProduct = cache(async (id: string) =>
   prisma.product.findUnique({ where: { id } })
