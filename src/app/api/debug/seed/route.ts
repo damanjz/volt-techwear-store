@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { requireAdmin } from "@/lib/admin-actions/helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -243,6 +244,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  // Require authenticated admin — prevents unauthenticated access on staging/preview
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Admin authentication required" }, { status: 403 });
+  }
+
   // Protect seed endpoint with a secret key
   const { searchParams } = new URL(request.url);
   const key = searchParams.get("key");
@@ -294,7 +302,10 @@ export async function GET(request: Request) {
     });
 
     // Seed clearance level demo users
-    const demoPass = process.env.SEED_ADMIN_PASSWORD || "password123";
+    const demoPass = process.env.SEED_ADMIN_PASSWORD;
+    if (!demoPass) {
+      throw new Error("SEED_ADMIN_PASSWORD is not set in environment.");
+    }
     const demoPasswordHash = await bcrypt.hash(demoPass, 12);
     
     const demoUsers = [
