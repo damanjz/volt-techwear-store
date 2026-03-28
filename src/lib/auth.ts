@@ -5,8 +5,20 @@ import { prisma } from "@/lib/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
-// NEXTAUTH_SECRET validation happens at runtime via NextAuth itself.
-// In production, ensure NEXTAUTH_SECRET is set in your environment variables.
+// Fail fast if NEXTAUTH_SECRET is weak or missing
+// Skip during build phase (next build sets NODE_ENV=production but NEXT_PHASE indicates build)
+if (
+  process.env.NODE_ENV === "production" &&
+  process.env.NEXT_PHASE !== "phase-production-build" &&
+  (!process.env.NEXTAUTH_SECRET ||
+    process.env.NEXTAUTH_SECRET.includes("change-in-production") ||
+    process.env.NEXTAUTH_SECRET.length < 32)
+) {
+  throw new Error(
+    "NEXTAUTH_SECRET is not configured for production. " +
+    "Generate one with: openssl rand -base64 32"
+  );
+}
 
 // Email validation
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
