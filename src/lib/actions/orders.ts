@@ -79,7 +79,10 @@ export async function createOrder(cartItems: CartItemInput[], total: number, cou
           status: "PAID",
           items: {
             create: cartItems.map((item) => {
-              const dbProduct = productMap.get(item.id)!;
+              const dbProduct = productMap.get(item.id);
+              if (!dbProduct) {
+                throw new Error(`Product "${item.name}" disappeared during order creation.`);
+              }
               return {
                 productId: item.id,
                 name: dbProduct.name,

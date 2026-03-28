@@ -48,9 +48,13 @@ export async function upgradeClearance(targetLevel: number) {
     select: { clearanceLevel: true, voltPoints: true },
   });
 
+  if (!updated) {
+    throw new Error("User not found after clearance upgrade.");
+  }
+
   return {
     success: true,
-    newClearanceLevel: updated!.clearanceLevel,
-    remainingPoints: updated!.voltPoints,
+    newClearanceLevel: updated.clearanceLevel,
+    remainingPoints: updated.voltPoints,
   };
 }
