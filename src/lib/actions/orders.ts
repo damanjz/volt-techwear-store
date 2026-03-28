@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { internalValidateCoupon } from "@/lib/admin-actions/orders";
 import { validateCartItems } from "./cart-validation";
 import type { CartItemInput } from "./cart-validation";
-import { VOLT_POINTS_RATE, CLEARANCE_THRESHOLDS } from "./constants";
+import { VOLT_POINTS_RATE, CLEARANCE_THRESHOLDS, CLEARANCE_TIERS } from "./constants";
 
 export async function createOrder(cartItems: CartItemInput[], total: number, couponCode?: string) {
   const session = await getServerSession(authOptions);
@@ -108,15 +108,21 @@ export async function createOrder(cartItems: CartItemInput[], total: number, cou
           data: { voltPoints: { increment: pointsEarned } },
         });
 
-        // Auto-promote clearance
-        let newLevel = updatedUser.clearanceLevel;
-        if (updatedUser.voltPoints >= CLEARANCE_THRESHOLDS.tier3) newLevel = 3;
-        else if (updatedUser.voltPoints >= CLEARANCE_THRESHOLDS.tier2) newLevel = 2;
+        // Auto-promote clearance — deduct tier cost (same as manual upgrade)
+        const currentLevel = updatedUser.clearanceLevel;
+        const nextTier = CLEARANCE_TIERS.find((t) => t.level === currentLevel + 1);
 
-        if (newLevel !== updatedUser.clearanceLevel) {
+        if (
+          nextTier &&
+          updatedUser.voltPoints >= CLEARANCE_THRESHOLDS[`tier${nextTier.level}` as keyof typeof CLEARANCE_THRESHOLDS] &&
+          updatedUser.voltPoints >= nextTier.cost
+        ) {
           await tx.user.update({
             where: { id: session.user.id },
-            data: { clearanceLevel: newLevel },
+            data: {
+              clearanceLevel: nextTier.level,
+              voltPoints: { decrement: nextTier.cost },
+            },
           });
         }
       }
