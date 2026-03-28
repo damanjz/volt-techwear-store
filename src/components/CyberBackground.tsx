@@ -104,18 +104,20 @@ export default function CyberBackground() {
 
       // Update and draw particles, and connect them
       for (let i = 0; i < particles.length; i++) {
-        particles[i].update(canvas.width, canvas.height);
-        particles[i].draw(ctx);
+        const pi = particles[i]!;
+        pi.update(canvas.width, canvas.height);
+        pi.draw(ctx);
 
         for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
+          const pj = particles[j]!;
+          const dx = pi.x - pj.x;
+          const dy = pi.y - pj.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < maxDistance) {
             ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.moveTo(pi.x, pi.y);
+            ctx.lineTo(pj.x, pj.y);
             
             // Opacity based on distance
             const opacity = (1 - distance / maxDistance) * (isDark ? 0.2 : 0.1);

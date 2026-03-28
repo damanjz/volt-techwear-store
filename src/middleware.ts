@@ -46,7 +46,7 @@ function getClientIp(request: NextRequest): string {
   if (realIp) return realIp;
 
   const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
+  if (forwarded) return forwarded.split(",")[0]?.trim() ?? "127.0.0.1";
 
   return "127.0.0.1";
 }

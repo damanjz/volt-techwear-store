@@ -28,16 +28,16 @@ describe("CLEARANCE_TIERS", () => {
 
   it("tiers are ordered by ascending level", () => {
     for (let i = 1; i < CLEARANCE_TIERS.length; i++) {
-      expect(CLEARANCE_TIERS[i].level).toBeGreaterThan(
-        CLEARANCE_TIERS[i - 1].level
+      expect(CLEARANCE_TIERS[i]!.level).toBeGreaterThan(
+        CLEARANCE_TIERS[i - 1]!.level
       );
     }
   });
 
   it("tiers have ascending costs", () => {
     for (let i = 1; i < CLEARANCE_TIERS.length; i++) {
-      expect(CLEARANCE_TIERS[i].cost).toBeGreaterThan(
-        CLEARANCE_TIERS[i - 1].cost
+      expect(CLEARANCE_TIERS[i]!.cost).toBeGreaterThan(
+        CLEARANCE_TIERS[i - 1]!.cost
       );
     }
   });

@@ -120,10 +120,10 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-        session.user.voltPoints = token.voltPoints as number;
-        session.user.clearanceLevel = token.clearanceLevel as number;
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.voltPoints = token.voltPoints;
+        session.user.clearanceLevel = token.clearanceLevel;
       }
       return session;
     }

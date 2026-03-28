@@ -29,7 +29,7 @@ export default function ConfigEditor({ configs }: { configs: Config[] }) {
   const handleSave = async (key: string) => {
     setSaving(key);
     try {
-      await upsertConfig(key, entries[key]);
+      await upsertConfig(key, entries[key] ?? "");
       router.refresh();
     } catch {
       alert("Failed to save");
