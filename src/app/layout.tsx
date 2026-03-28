@@ -52,7 +52,7 @@ export const viewport: Viewport = {
 import CrosshairCursor from "@/components/CrosshairCursor";
 import TerminalToasts from "@/components/TerminalToast";
 import dynamic from "next/dynamic";
-const CyberBackground = dynamic(() => import("@/components/CyberBackground"), { ssr: false });
+const CyberBackground = dynamic(() => import("@/components/CyberBackground"));
 import ThemeProvider from "@/components/ThemeProvider";
 import AuthProvider from "@/components/AuthProvider";
 import ThemeLoader from "@/components/ThemeLoader";
