@@ -76,7 +76,7 @@ export default async function ProductPage({
     category: product.category,
     offers: {
       "@type": "Offer",
-      price: product.price,
+      price: (product.price / 100).toFixed(2),
       priceCurrency: "USD",
       availability:
         product.stock > 0
