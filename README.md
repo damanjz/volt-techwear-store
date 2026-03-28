@@ -40,6 +40,27 @@
 
 ---
 
+## ⚙️ HOW IT WORKS
+
+### 🪐 Checkout Engine (Atomic & Snapshotted)
+When a user initiates a checkout, the system executes a complex, multi-tier **Prisma `$transaction`**:
+1.  **Inventory Locking:** The system performs an atomic stock decrement using `updateMany` with a `stock: { gte: quantity }` predicate to prevent overselling under high concurrency.
+2.  **Server-Side Validation:** All cart prices and coupon discounts are re-calculated server-side against the latest database state, ignoring client-side input for total amounts.
+3.  **Denormalized Snapshots:** The `OrderItem` model captures a static snapshot of the product `name` and `price` at purchase time. This ensures historical consistency for financial audits if the master product record changes.
+
+### ⚡ Syndicate Progression
+The **Syndicate Identity System** is an automated loyalty and clearance engine:
+- **Volt Point Economy:** Purchases earn **10%** of the order total in Volt Points (VP).
+- **Auto-Promotion:** If an order push a user's VP balance above a tier threshold (e.g., 5,000 VP), the user is automatically promoted to the next **Clearance Level** (Lvl 1 → 2 → 3).
+- **Clearance Tiers:** Higher levels unlock restricted hardware in the **Black Site** vault and reduce multipliers on certain product categories.
+
+### 🎨 Theme Injection (RSC)
+The UI identity is dynamic and operator-controlled:
+1.  **Admin Theme Editor:** Admins update the `SiteConfig` table with hex codes for `--volt`, `--cyber-red`, etc.
+2.  **ThemeLoader (RSC):** A React Server Component fetches these configs and injects a `<style>` block into the `<body>` that overrides CSS variables globally without client-side hydration delays.
+
+---
+
 ## 🔐 SECURITY ARCHITECTURE
 
 ### Middleware Protection (3 Zones)
@@ -117,6 +138,15 @@ All admin mutations are logged in the `ActivityLog` table with user ID, action, 
 > Theme colors can be overridden at runtime via the Admin Theme Editor (stored in `SiteConfig`, injected via `ThemeLoader` component).
 
 ---
+
+---
+
+## 🧩 ARCHITECTURE DEEP DIVE
+
+### Layered Separation of Concerns
+- **`src/lib/actions` (User Logic):** Client-exposed server actions for checkout, cart validation, and clearance upgrades. These verify the session user ID for all operations.
+- **`src/lib/admin-actions` (Internal Logic):** High-privilege mutations restricted by the `middleware.ts` layer and internal role checks. Every mutation in this layer triggers an entry in the `ActivityLog`.
+- **`src/components/ThemeLoader.tsx` (Identity Layer):** Decouples the design system from the hardcoded CSS, allowing the Syndicate's visual identity to shift via database configuration.
 
 ## 📂 PROJECT STRUCTURE
 
@@ -205,11 +235,14 @@ volt-techwear-store/
    npm run dev
    ```
 
-5. **Seed data (dev only):**
-   Send a POST request to `/api/debug/seed` sending the internal `SEED_SECRET` to securely populate mock products, admin users, and configurations.
-
 6. **Admin access:**
-   Login as `admin@volt.sys` / `admin123` → navigate to `/admin`
+   Login as `admin@volt.sys` / `admin123` → navigate to `/admin`.
+
+7. **Institutional Seeding:**
+   To populate the system for the first time:
+   - Ensure `SEED_SECRET` is set in your `.env`.
+   - Send a `POST` request to `http://localhost:3000/api/debug/seed` with `{"secret": "YOUR_SECRET"}` in the header or body.
+   - This creates the primary **ADMIN** operator and populates the store with initial hardware.
 
 ---
 
@@ -228,8 +261,8 @@ The build script automatically switches to PostgreSQL, pushes schema changes, ge
 
 ## 🧬 COLLABORATION
 
-- **Lead Architect:** Antigravity (Agentic AI Developer)
-- **System Consultant:** gpt-oss:120b (Lead UX/UI Visionary)
-- **Technician:** Daman (Operative 094)
+- **Lead Architect:** Claude (UX/UI Visionary & Architectural Strategist)
+- **Lead Agentic Developer:** Antigravity (AI Operational Specialist)
+- **Project Oversight:** Daman (Operative 094)
 
 🔥 **[ END_OF_TRANSMISSION ]** 🔥
