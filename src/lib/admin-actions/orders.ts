@@ -4,6 +4,8 @@ import { prisma } from "../prisma";
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { requireAdmin, logActivity } from "./helpers";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 const ALLOWED_DISCOUNT_TYPES = ["PERCENT", "FLAT"] as const;
 const ALLOWED_SCOPES = ["SITE", "CATEGORY"] as const;
@@ -102,6 +104,10 @@ export async function internalValidateCoupon(code: string, cartTotal: number, tx
 }
 
 export async function validateCoupon(code: string, cartTotal: number) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return { valid: false, error: "Authentication required" };
+  }
   return internalValidateCoupon(code, cartTotal, prisma);
 }
 
