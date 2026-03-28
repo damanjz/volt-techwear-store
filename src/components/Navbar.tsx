@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
 import { useSession } from "next-auth/react";
-import CartDrawer from "./cart/CartDrawer";
+import dynamic from "next/dynamic";
 import DesktopNav from "./navbar/DesktopNav";
-import MobileMenu from "./navbar/MobileMenu";
+const CartDrawer = dynamic(() => import("./cart/CartDrawer"), { ssr: false });
+const MobileMenu = dynamic(() => import("./navbar/MobileMenu"), { ssr: false });
 
 const navLinks = [
   { label: "Shop", href: "/shop" },

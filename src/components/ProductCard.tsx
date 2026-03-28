@@ -3,7 +3,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useState } from "react";
@@ -37,10 +36,7 @@ export default function ProductCard({ id, name, price, category, imageUrl, isNew
   };
 
   return (
-    <motion.div 
-      whileHover={{ y: -5 }}
-      transition={{ type: "spring", stiffness: 300 }}
-      className="group relative flex flex-col bg-background/80 backdrop-blur-md overflow-hidden border border-foreground/5 hover:border-volt/30 transition-colors"
+    <div className="group relative flex flex-col bg-background/80 backdrop-blur-md overflow-hidden border border-foreground/5 hover:border-volt/30 transition-all duration-200 hover:-translate-y-1"
     >
       {/* Badges */}
       <div className="absolute top-4 left-4 z-10 flex gap-2">
@@ -82,6 +78,6 @@ export default function ProductCard({ id, name, price, category, imageUrl, isNew
           <h3 className="font-sans font-medium text-lg leading-tight group-hover:text-volt transition-colors">{name}</h3>
         </Link>
       </div>
-    </motion.div>
+    </div>
   );
 }
