@@ -19,8 +19,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
     }
 
-    if (password.length < 8) {
-      return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
+    if (password.length < 8 || password.length > 128) {
+      return NextResponse.json(
+        { error: "Password must be between 8 and 128 characters" },
+        { status: 400 }
+      );
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email: emailSanitized } });
