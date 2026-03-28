@@ -63,14 +63,14 @@
 
 ### 🔒 Audit Compliance & Hardening
 Following a deep architectural review, VOLT represents tier-one e-commerce standards:
-- **Financial Precision:** All financial datasets rigorously process deterministic integer cents scaling (`$12.50` -> `1250`) eradicating floating-point arithmetic vulnerabilities.
+- **Financial Precision:** All financial datasets rigorously process deterministic integer cents scaling. `OrderItem` models utilize denormalized snapshots (price/name) at purchase time to ensure immutable audit trails against product mutations.
 - **Atomic Concurrency:** High-concurrency cart processing, inventory tracking, and valid coupon redemptions process asynchronously within isolated Prisma `$transaction` boundaries.
 - **DDoS/Brute Force Mitigation:** Global application and API ingestion is organically rate-limited via Upstash Redis edge capabilities.
 - **Server Authority:** Operator clearance levels, sessions, and multi-tier authentication strictly re-fetch securely server-side per network request, preventing token spoofing intercepting.
-- **Next.js 15 Rigor:** Complete CSP header implementation, structured `error.tsx` Catch-all route bounds, decoupled viewport meta-protocols, layout responsiveness (`sizes`), and dedicated SEO crawlers mappings.
+- **Next.js 15 Rigor:** Complete CSP header implementation, structured `error.tsx` Catch-all route bounds, global `loading.tsx` skeleton states, decoupled viewport meta-protocols, and smart navigation protection (fixing off-site `router.back` leaks).
 - **RSC & Caching:** Leverages React 19 `cache()` for DB call deduplication and utilizes pure Server Components for static asset rendering to minimize client-side bundle weight.
-- **A11y Engineering:** Rigorous ARIA-compliant overlays (Cart/Navigation) with full keyboard (Escape key) support and semantic radiogroup interactions.
-- **Type Safety Protocol:** Complete eradication of `any` across the core auth layer, server actions, and test suites, enforcing strict Prisma model and NextAuth interface compliance.
+- **A11y Engineering:** Rigorous ARIA-compliant overlays with full keyboard support, eradicated nested interactive elements (button-in-link fixes), and semantic list roles for layout blocks.
+- **Type Safety Protocol:** Eradication of `any` across auth, actions, and tests. Enforced via `npm run typecheck` to ensure strict Prisma and NextAuth interface compliance.
 
 ---
 
@@ -190,6 +190,7 @@ volt-techwear-store/
    npm run db:dev          # Switch to SQLite for local dev
    npx prisma migrate dev  # Execute schema migrations locally
    npx prisma generate     # Rebuild the local types
+   npm run typecheck       # Verify total type safety
    ```
 
 3. **Environment (`.env`):**
